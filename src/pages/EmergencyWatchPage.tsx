@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { Sidebar, BottomNav } from "../components/AppNav";
 import {
   Hospital, Clock, Users, AlertTriangle,
@@ -226,9 +226,9 @@ function LiveMap({
         const latlngs = lineString.map(([lng, lat]: [number, number]) => [lat, lng] as [number, number]);
         const polyline = L.polyline(latlngs, {
           color:     cfg.color,
-          weight:    7,
-          opacity:   0.85,
-          dashArray: "",
+          weight:    5,
+          opacity:   0.45,
+          dashArray: "10 6",
         }).addTo(map);
         lines.push(polyline);
       });
@@ -245,9 +245,9 @@ function LiveMap({
       const isSelected = id === selected;
       lines.forEach((line: any) => {
         line.setStyle({
-          opacity:   isSelected ? 1.0 : selected ? 0.25 : 0.85,
-          weight:    isSelected ? 9   : 7,
-          dashArray: "",
+          opacity:   isSelected ? 1.0 : selected ? 0.15 : 0.45,
+          weight:    isSelected ? 8   : 5,
+          dashArray: isSelected ? ""  : "10 6",
         });
         if (isSelected) line.bringToFront();
       });
@@ -540,7 +540,7 @@ export default function EmergencyWatchPage() {
   const criticalCount = facilities.filter(f => deriveStatus(f.avgWaitMinutes) === "critical").length;
   const isLoading     = geoStatus === "locating" || fetchStatus === "loading";
 
-  const mapFacilities = filtered.map(f => ({
+  const mapFacilities = useMemo(() => filtered.map(f => ({
     id:       f.id,
     name:     f.name,
     lat:      f.latitude,
@@ -548,7 +548,7 @@ export default function EmergencyWatchPage() {
     wait:     f.avgWaitMinutes,
     status:   deriveStatus(f.avgWaitMinutes),
     geometry: f.route?.geometry ?? null,
-  }));
+  })), [filtered]);
 
   return (
     <>
