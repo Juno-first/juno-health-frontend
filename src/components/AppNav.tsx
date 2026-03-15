@@ -1,42 +1,41 @@
 import { useNavigate, useLocation } from "react-router-dom";
-import { useSelector } from "react-redux";
-import type { RootState } from "../store"; // adjust path to your store
+import { useSelector, useDispatch } from "react-redux";
+import type { RootState, AppDispatch } from "../store";
+import { logout } from "../store/slices/userSlice";
 import {
-  Activity, House, FolderOpen, CalendarDays,
+  Activity, House, FolderOpen, ShieldAlert,
   Hospital, User, Pill, FlaskConical, Bot,
-  Settings, CircleHelp, Phone,
+  Settings, CircleHelp, Phone, LogOut,
 } from "lucide-react";
 import PWAInstallBanner from "./PWAInstallBanner";
 
 // ── Nav definition ────────────────────────────────────────────────────────────
 export const BOTTOM_NAV_ITEMS = [
-  { id: "home",     label: "Home",     Icon: House,        path: "/dashboard" },
-  { id: "records",  label: "Records",  Icon: FolderOpen,   path: "/records"   },
-  { id: "schedule", label: "Schedule", Icon: CalendarDays, path: "/schedule"  },
-  { id: "er-queue", label: "ER Queue", Icon: Hospital,     path: "/er-queue"  },
-  { id: "profile",  label: "Profile",  Icon: User,         path: "/profile"   },
+  { id: "home",            label: "Home",      Icon: House,       path: "/dashboard"       },
+  { id: "records",         label: "Records",   Icon: FolderOpen,  path: "/records"         },
+  { id: "emergency-watch", label: "Emergency", Icon: ShieldAlert, path: "/emergency-watch" },
+  { id: "er-queue",        label: "ER Queue",  Icon: Hospital,    path: "/er-queue"        },
+  { id: "profile",         label: "Profile",   Icon: User,        path: "/profile"         },
 ];
 
 export const SIDEBAR_NAV_ITEMS = [
-  { id: "home",      label: "Home",                 Icon: House,        path: "/dashboard" },
-  { id: "records",   label: "Medical Records",       Icon: FolderOpen,   path: "/records"   },
-  { id: "schedule",  label: "Appointments",          Icon: CalendarDays, path: "/schedule"  },
-  { id: "meds",      label: "Medications",           Icon: Pill,         path: "/medications"},
-  { id: "labs",      label: "Lab Results",           Icon: FlaskConical, path: "/labs"      },
-  { id: "er-queue",  label: "ER Queue",              Icon: Hospital,     path: "/er-queue"  },
-  { id: "medbot",    label: "Ask MedBot",            Icon: Bot,          path: "/medbot"    },
+  { id: "home",            label: "Home",            Icon: House,       path: "/dashboard"       },
+  { id: "records",         label: "Medical Records", Icon: FolderOpen,  path: "/records"         },
+  { id: "emergency-watch", label: "Emergency Watch", Icon: ShieldAlert, path: "/emergency-watch" },
+  { id: "meds",            label: "Medications",     Icon: Pill,        path: "/medications"     },
+  { id: "labs",            label: "Lab Results",     Icon: FlaskConical,path: "/labs"            },
+  { id: "er-queue",        label: "ER Queue",        Icon: Hospital,    path: "/er-queue"        },
+  { id: "medbot",          label: "Ask MedBot",      Icon: Bot,         path: "/medbot"          },
 ];
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-/** Derive 1–2 uppercase initials from the token user. */
 function getInitials(firstName?: string, lastName?: string, fallback = "?"): string {
   const first = firstName?.trim()[0] ?? "";
   const last  = lastName?.trim()[0]  ?? "";
   return (first + last).toUpperCase() || fallback.toUpperCase();
 }
 
-/** Return the display ID shown under the user's name. */
 function getDisplayId(user: NonNullable<RootState["user"]["user"]>): string {
   if (user.accountType === "PATIENT") return `Patient ID: ${user.patientId}`;
   return `${user.staffRole} · ${user.staffId}`;
@@ -79,14 +78,19 @@ export function BottomNav() {
 // ── Shared Sidebar (desktop) ──────────────────────────────────────────────────
 export function Sidebar() {
   const navigate = useNavigate();
+  const dispatch = useDispatch<AppDispatch>();
   const { pathname } = useLocation();
 
-  // Pull user directly from the Redux store (populated from the JWT by userSlice)
   const user = useSelector((state: RootState) => state.user.user);
 
   const initials  = user ? getInitials(user.firstName, user.lastName, user.fullName) : "?";
   const fullName  = user?.fullName  ?? "Guest";
   const displayId = user ? getDisplayId(user) : "";
+
+  function handleLogout() {
+    dispatch(logout());
+    navigate("/", { replace: true });
+  }
 
   return (
     <aside
@@ -116,7 +120,7 @@ export function Sidebar() {
           </div>
         </div>
 
-        {/* User card — populated from token */}
+        {/* User card */}
         <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
           <div className="w-12 h-12 rounded-xl bg-blue-200 flex items-center justify-center flex-shrink-0 font-bold text-blue-800 text-sm">
             {initials}
@@ -153,7 +157,7 @@ export function Sidebar() {
           </button>
         </div>
 
-        {/* Settings / Help */}
+        {/* Settings / Help / Logout */}
         <div className="pt-5 border-t border-gray-100 space-y-1">
           <button className="dash-nav-item">
             <Settings className="w-5 h-5 flex-shrink-0" />
@@ -162,6 +166,13 @@ export function Sidebar() {
           <button className="dash-nav-item">
             <CircleHelp className="w-5 h-5 flex-shrink-0" />
             <span className="text-sm">Help &amp; Support</span>
+          </button>
+          <button
+            onClick={handleLogout}
+            className="dash-nav-item text-red-600 hover:bg-red-50"
+          >
+            <LogOut className="w-5 h-5 flex-shrink-0" />
+            <span className="text-sm font-semibold">Log Out</span>
           </button>
         </div>
       </nav>
