@@ -5,10 +5,13 @@ import {
   Navigation, Phone, X, Search, Activity,
   RefreshCw, ChevronRight, Layers, MapPin,
   Loader2, WifiOff, LocateFixed, Route as RouteIcon,
-  ChevronDown, ChevronUp,
+  ChevronDown, ChevronUp,MessageCircle,Send
 } from "lucide-react";
 import { useNearbyFacilities } from "../store/hooks/useNearbyFacilities";
 import type { NearbyFacility } from "../schemas/facility.schema";
+import { useFacilityGuidance } from "../store/hooks/useFacilityGuidance";
+import { useAppSelector } from "../store/hooks/hooks";
+import { useDraggable } from "../store/hooks/useDraggable";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -69,6 +72,226 @@ interface MapFacility {
   status:   CapacityStatus;
   // geometry: array of line-strings, each is array of [lng, lat]
   geometry: [number, number][][] | null | undefined;
+}
+
+function JunoFacilityChat({
+  facilities,
+  authToken,
+}: {
+  facilities: NearbyFacility[];
+  authToken?: string;
+}) {
+  const [open,  setOpen]  = useState(false);
+  const [input, setInput] = useState("");
+  const scrollRef         = useRef<HTMLDivElement>(null);
+
+  const { position, isDragging, onMouseDown, onTouchStart } = useDraggable();
+
+  const { messages, loading, send, reset } = useFacilityGuidance(
+    facilities,
+    authToken
+  );
+
+  useEffect(() => {
+    scrollRef.current?.scrollTo({
+      top:      scrollRef.current.scrollHeight,
+      behavior: "smooth",
+    });
+  }, [messages]);
+
+  const handleSend = async () => {
+    const prompt = input.trim();
+    if (!prompt) return;
+    setInput("");
+    await send(prompt);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSend();
+    }
+  };
+
+  return (
+    <>
+      {/* Floating button */}
+      <button
+        onClick={() => setOpen(v => !v)}
+        className="fixed bottom-20 right-4 lg:bottom-6 lg:right-[320px] z-50 w-14 h-14 rounded-2xl shadow-2xl flex items-center justify-center"
+        style={{
+          background: "var(--color-juno-green)",
+          transform:  `translate(${position.x}px, ${position.y}px)`,
+        }}
+      >
+        {open
+          ? <X size={22} className="text-white" />
+          : <MessageCircle size={22} className="text-white" />
+        }
+      </button>
+
+      {/* Chat panel */}
+      {open && (
+        <div
+          className="fixed bottom-36 right-4 lg:bottom-20 lg:right-[320px] z-50 w-[320px] rounded-2xl shadow-2xl overflow-hidden flex flex-col fade-in"
+          style={{
+            background:     "rgba(255,255,255,.98)",
+            backdropFilter: "blur(16px)",
+            height:         "420px",
+            transform:      `translate(${position.x}px, ${position.y}px)`,
+            cursor:         isDragging ? "grabbing" : "auto",
+          }}
+        >
+          {/* Header — drag handle */}
+          <div
+            className="px-4 py-3 flex items-center justify-between flex-shrink-0 select-none"
+            style={{
+              background: "var(--color-juno-green)",
+              cursor:     isDragging ? "grabbing" : "grab",
+            }}
+            onMouseDown={onMouseDown}
+            onTouchStart={onTouchStart}
+          >
+            <div className="flex items-center gap-2">
+              <div className="w-7 h-7 rounded-lg bg-white/20 flex items-center justify-center">
+                <Activity size={14} className="text-white" />
+              </div>
+              <div>
+                <p className="text-sm font-black text-white leading-none">Ask Juno</p>
+                <p className="text-[10px] text-white/70">Facility recommendations</p>
+              </div>
+            </div>
+            {messages.length > 0 && (
+              <button
+                onMouseDown={e => e.stopPropagation()}
+                onClick={reset}
+                className="text-[10px] text-white/70 hover:text-white font-semibold px-2 py-1 rounded-lg hover:bg-white/10 transition-colors"
+              >
+                Clear
+              </button>
+            )}
+          </div>
+
+          {/* Messages */}
+          <div
+            ref={scrollRef}
+            className="flex-1 overflow-y-auto px-3 py-3 space-y-2.5"
+          >
+            {/* Empty state */}
+            {messages.length === 0 && (
+              <div className="h-full flex flex-col items-center justify-center gap-3 text-center px-4">
+                <div
+                  className="w-12 h-12 rounded-2xl flex items-center justify-center"
+                  style={{ background: "rgba(22,163,74,.1)" }}
+                >
+                  <MessageCircle size={20} style={{ color: "var(--color-juno-green)" }} />
+                </div>
+                <p className="text-sm font-semibold text-gray-700">
+                  Tell me your symptoms
+                </p>
+                <p className="text-xs text-gray-400 leading-relaxed">
+                  I'll help you find the best nearby facility based on your
+                  situation and current wait times.
+                </p>
+                <div className="flex flex-col gap-1.5 w-full mt-1">
+                  {[
+                    "I have a bad headache and fever",
+                    "Chest pain for the last hour",
+                    "Which facility has the shortest wait?",
+                  ].map(q => (
+                    <button
+                      key={q}
+                      onClick={() => setInput(q)}
+                      className="text-left text-xs px-3 py-2 rounded-xl border border-gray-100 hover:border-gray-200 hover:bg-gray-50 text-gray-600 transition-colors"
+                    >
+                      {q}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Message bubbles */}
+            {messages.map((msg, i) => (
+              <div
+                key={i}
+                className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
+              >
+                <div
+                  className="max-w-[85%] px-3 py-2 rounded-2xl text-xs leading-relaxed"
+                  style={
+                    msg.role === "user"
+                      ? {
+                          background:              "var(--color-juno-green)",
+                          color:                   "white",
+                          borderBottomRightRadius: 4,
+                        }
+                      : {
+                          background:             "#F3F4F6",
+                          color:                  "#111827",
+                          borderBottomLeftRadius: 4,
+                        }
+                  }
+                >
+                  {msg.text}
+                  {msg.role === "assistant" && msg.playing && (
+                    <span className="inline-flex items-center gap-1 ml-2 opacity-60">
+                      <span className="w-1 h-1 rounded-full bg-gray-500 animate-bounce" style={{ animationDelay: "0ms"   }} />
+                      <span className="w-1 h-1 rounded-full bg-gray-500 animate-bounce" style={{ animationDelay: "150ms" }} />
+                      <span className="w-1 h-1 rounded-full bg-gray-500 animate-bounce" style={{ animationDelay: "300ms" }} />
+                    </span>
+                  )}
+                </div>
+              </div>
+            ))}
+
+            {/* Typing indicator */}
+            {loading && (
+              <div className="flex justify-start">
+                <div
+                  className="px-3 py-2.5 rounded-2xl bg-gray-100"
+                  style={{ borderBottomLeftRadius: 4 }}
+                >
+                  <div className="flex items-center gap-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-gray-400 animate-bounce" style={{ animationDelay: "0ms"   }} />
+                    <span className="w-1.5 h-1.5 rounded-full bg-gray-400 animate-bounce" style={{ animationDelay: "150ms" }} />
+                    <span className="w-1.5 h-1.5 rounded-full bg-gray-400 animate-bounce" style={{ animationDelay: "300ms" }} />
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Input */}
+          <div className="px-3 pb-3 pt-2 border-t border-gray-100 flex-shrink-0">
+            <div className="flex items-end gap-2">
+              <textarea
+                value={input}
+                onChange={e => setInput(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder="Describe your symptoms…"
+                rows={1}
+                disabled={loading}
+                className="flex-1 resize-none text-xs bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-gray-800 placeholder-gray-400 outline-none focus:border-gray-300 transition-colors disabled:opacity-50"
+                style={{ maxHeight: 80 }}
+              />
+              <button
+                onClick={handleSend}
+                disabled={!input.trim() || loading}
+                className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 transition-all disabled:opacity-40 hover:brightness-110"
+                style={{ background: "var(--color-juno-green)" }}
+              >
+                <Send size={14} className="text-white" />
+              </button>
+            </div>
+            <p className="text-[9px] text-gray-300 mt-1.5 text-center">
+              Enter to send · Juno will speak the response
+            </p>
+          </div>
+        </div>
+      )}
+    </>
+  );
 }
 
 function LiveMap({
@@ -516,13 +739,13 @@ function PeekCard({ facility, onClick }: { facility: NearbyFacility; onClick: ()
 
 export default function EmergencyWatchPage() {
   const { facilities, geoStatus, fetchStatus, error, userLat, userLon, refresh } = useNearbyFacilities();
-
+  
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [filter,     setFilter]     = useState<CapacityStatus | "all">("all");
   const [search,     setSearch]     = useState("");
   const [showList,   setShowList]   = useState(false);
   const [lastUpdate, setLastUpdate] = useState(new Date());
-
+  const authToken = useAppSelector(s => s.user.accessToken);
   useEffect(() => {
     if (fetchStatus === "loaded") setLastUpdate(new Date());
   }, [fetchStatus]);
@@ -840,6 +1063,10 @@ export default function EmergencyWatchPage() {
               </div>
             )}
           </div>
+          <JunoFacilityChat
+            facilities={facilities}
+            authToken={authToken ?? undefined}
+            />
         </div>
 
         <BottomNav />
