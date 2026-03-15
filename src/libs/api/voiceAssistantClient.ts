@@ -1,3 +1,4 @@
+import type { NearbyFacility } from "../../schemas/facility.schema";
 export interface VoiceAssistantPayload {
   method: string;
   token: string;
@@ -87,4 +88,47 @@ export async function requestQueueAudio(
   const script = response.headers.get("X-Generated-Script") ?? "";
 
   return { audioBlob, script };
+}
+export interface GuidanceMessage {
+  role: "user" | "assistant";
+  content: string;
+}
+
+export interface FacilityGuidancePayload {
+  facilities: NearbyFacility[];
+  prompt: string;
+  history: GuidanceMessage[];
+  symptomDescription?: string;
+}
+
+export interface FacilityGuidanceResponse {
+  audioBlob: Blob;
+  text: string;
+}
+
+export async function requestFacilityGuidance(
+  payload: FacilityGuidancePayload,
+  authToken?: string
+): Promise<FacilityGuidanceResponse> {
+  // strip route field — backend doesn't need it
+  const facilities = payload.facilities.map(({ route, ...rest }) => rest);
+
+  const response = await fetch(`${AI_API_BASE}/facility/guidance`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}),
+    },
+    body: JSON.stringify({ ...payload, facilities }),
+  });
+
+  if (!response.ok) {
+    const errText = await response.text();
+    throw new Error(errText || "Failed to generate facility guidance");
+  }
+
+  const audioBlob = await response.blob();
+  const text = response.headers.get("X-Juno-Text") ?? "";
+
+  return { audioBlob, text };
 }
