@@ -74,7 +74,7 @@ export const adminQueueClient = {
     payload: { question: string } | { intent: string },
   ): Promise<{ status: string; questionId: string }> => {
     const { data } = await axios.post(
-      `${AI_BASE}/admin/patient-check/${visitId}`,
+      `${AI_BASE}admin/patient-check/${visitId}`,
       { departmentId, ...payload },
       { headers: authHeader() },
     );
