@@ -7,6 +7,10 @@ export default defineConfig({
   define: {
     global: 'globalThis',  // ← needs to be here
   },
+  build: {
+    outDir: 'dist',       // ← Vercel expects this
+    sourcemap: false,     // ← keep bundle small in prod
+  },
   plugins: [
     react(),
     tailwindcss(),
