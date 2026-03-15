@@ -15,6 +15,7 @@ import EmergencyWatchPage   from './pages/EmergencyWatchPage'
 import HealthOnboardingPage from './pages/HealthOnboardingPage'
 import AdminQueuePage       from './pages/AdminQueuePage'
 import { RealtimeAudioPopup } from './components/RealtimeAudioPopup'
+import AnalyticsPage from './pages/AnalyticsPage'
 
 // ── Loading splash ─────────────────────────────────────────────────────────────
 function LoadingScreen() {
@@ -78,6 +79,7 @@ function App() {
 
         {/* Admin */}
         <Route path="/admin/queue/:departmentId" element={<ProtectedRoute><AdminQueuePage /></ProtectedRoute>} />
+        <Route path="/admin/analytics"       element={<ProtectedRoute><AnalyticsPage /></ProtectedRoute>} />
 
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/" replace />} />

@@ -5,7 +5,7 @@ import { logout } from "../store/slices/userSlice";
 import {
   Activity, House, FolderOpen, ShieldAlert,
   Hospital, User, Pill, FlaskConical, Bot,
-  Settings, CircleHelp, Phone, LogOut,
+  Settings, CircleHelp, Phone, LogOut, BarChart2,
 } from "lucide-react";
 import PWAInstallBanner from "./PWAInstallBanner";
 
@@ -19,13 +19,14 @@ export const BOTTOM_NAV_ITEMS = [
 ];
 
 export const SIDEBAR_NAV_ITEMS = [
-  { id: "home",            label: "Home",            Icon: House,       path: "/dashboard"       },
-  { id: "records",         label: "Medical Records", Icon: FolderOpen,  path: "/records"         },
-  { id: "emergency-watch", label: "Emergency Watch", Icon: ShieldAlert, path: "/emergency-watch" },
-  { id: "meds",            label: "Medications",     Icon: Pill,        path: "/medications"     },
-  { id: "labs",            label: "Lab Results",     Icon: FlaskConical,path: "/labs"            },
-  { id: "er-queue",        label: "ER Queue",        Icon: Hospital,    path: "/er-queue"        },
-  { id: "medbot",          label: "Ask MedBot",      Icon: Bot,         path: "/medbot"          },
+  { id: "home",             label: "Home",             Icon: House,       path: "/dashboard"        },
+  { id: "records",          label: "Medical Records",  Icon: FolderOpen,  path: "/records"          },
+  { id: "emergency-watch",  label: "Emergency Watch",  Icon: ShieldAlert, path: "/emergency-watch"  },
+  { id: "meds",             label: "Medications",      Icon: Pill,        path: "/medications"      },
+  { id: "labs",             label: "Lab Results",      Icon: FlaskConical,path: "/labs"             },
+  { id: "er-queue",         label: "ER Queue",         Icon: Hospital,    path: "/er-queue"         },
+  { id: "medbot",           label: "Ask MedBot",       Icon: Bot,         path: "/medbot"           },
+  { id: "queue-analytics",  label: "Queue Analytics",  Icon: BarChart2,   path: "/admin/analytics"  },
 ];
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
