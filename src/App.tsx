@@ -1,7 +1,7 @@
 import './App.css'
 import LoginPage from './pages/LoginPage'
 import CreateAccountPage from './pages/CreateAccountPage'
-import { Routes, Route, Navigate } from 'react-router-dom'
+import { Routes, Route} from 'react-router-dom'
 import DashboardPage from './pages/Dashborard'
 import ERQueuePage from './pages/ERQueuePage'
 import JoinQueuePage from './pages/JoinQueuePage'

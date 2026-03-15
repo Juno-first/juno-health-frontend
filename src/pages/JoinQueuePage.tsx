@@ -34,7 +34,7 @@ export default function JoinQueuePage() {
   const [showScanner, setShowScanner] = useState(false);
   const accessToken = useAppSelector((s) => s.user.accessToken);
 
-  const [method, setMethod] = useState<CheckInMethod>("CODE");
+//   const [method, setMethod] = useState<CheckInMethod>("CODE");
   const [formErrors, setFormErrors] = useState<string[]>([]);
   const [form, setForm] = useState<FormState>({
     symptoms: "",
