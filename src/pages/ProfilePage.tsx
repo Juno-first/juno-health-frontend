@@ -1,12 +1,14 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import type { RootState } from "../store"; // adjust path as needed
 import { Sidebar, BottomNav } from "../components/AppNav";
 import {
-  ArrowLeft, Settings, Camera, QrCode, Pencil, Droplets, Ruler,
+  ArrowLeft, Settings, QrCode, Pencil, Droplets, Ruler,
   Scale, MapPin, HeartPulse, TriangleAlert, Pill, TrendingUp,
   FileText, TestTube2, Users, User, Share2, Download, RefreshCw,
   Lightbulb, ShieldCheck, History, Phone, Info, ChevronRight,
-  Calendar, Clock, Hourglass, Loader2,
+  Calendar, Clock, Hourglass, Loader2, UserCircle2
 } from "lucide-react";
 import { useProfile } from "../store/hooks/useProfile";
 
@@ -92,11 +94,15 @@ function EmptyState({ message }: { message: string }) {
 // ─── Flip Card ────────────────────────────────────────────────────────────────
 function ProfileFlipCard({
   desktop = false,
+  name,
+  patientId,
   height,
   weight,
   bloodType,
 }: {
   desktop?:  boolean;
+  name:      string;
+  patientId: string;
   height:    string;
   weight:    string;
   bloodType: string;
@@ -131,17 +137,13 @@ function ProfileFlipCard({
           }}
         >
           <div className="flex flex-col items-center mb-6">
-            <div className="relative mb-4">
-              <div className="w-32 h-32 rounded-full overflow-hidden border-4 shadow-lg" style={{ borderColor: "var(--color-juno-green)" }}>
-                <img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-8.jpg" alt="Profile" className="w-full h-full object-cover" />
+            <div className="mb-4">
+              <div className="w-32 h-32 rounded-full flex items-center justify-center border-4 shadow-lg" style={{ borderColor: "var(--color-juno-green)", background: "#e8f5e9" }}>
+                <UserCircle2 size={80} className="text-green-600" />
               </div>
-              <button className="absolute bottom-0 right-0 w-10 h-10 rounded-full text-white flex items-center justify-center shadow-lg hover:brightness-90 transition-all" style={{ background: "var(--color-juno-green)" }}>
-                <Camera size={15} />
-              </button>
             </div>
-            <h2 className={`font-bold text-gray-800 mb-1 ${desktop ? "text-xl" : "text-2xl"}`}>Michael Thompson</h2>
-            <p className="text-sm text-gray-500 mb-0.5">Patient ID: JN-2024-08457</p>
-            <p className="text-sm text-gray-500">DOB: March 15, 1985 (38 years old)</p>
+            <h2 className={`font-bold text-gray-800 mb-1 ${desktop ? "text-xl" : "text-2xl"}`}>{name}</h2>
+            <p className="text-sm text-gray-500 mb-0.5">Patient ID: {patientId}</p>
           </div>
 
           <div className="grid grid-cols-2 gap-3 mb-6">
@@ -390,24 +392,33 @@ function SectionHeading({ title, action }: { title: string; action?: string }) {
 // ─── Page ─────────────────────────────────────────────────────────────────────
 export default function ProfilePage() {
   const navigate = useNavigate();
+
+  // ── Auth user from Redux ───────────────────────────────────────────────────
+  const authUser = useSelector((state: RootState) => state.user.user);
+  const displayName = authUser?.fullName ?? "—";
+  const displayId   = authUser?.accountType === "PATIENT"
+    ? authUser.patientId.slice(0, 8).toUpperCase()
+    : (authUser?.accountType === "STAFF" ? authUser.staffId.slice(0, 8).toUpperCase() : "—");
+
+  // ── Onboarding / health data ───────────────────────────────────────────────
   const { profile, loadStatus } = useProfile();
 
-  const height    = profile?.heightDisplay  ?? '—';
-  const weight    = profile?.weightDisplay  ?? '—';
-  const bloodType = profile?.bloodType      ?? '—';
+  const height    = profile?.heightDisplay  ?? "—";
+  const weight    = profile?.weightDisplay  ?? "—";
+  const bloodType = profile?.bloodType      ?? "—";
 
-  const conditions  = profile?.conditions   ?? [];
-  const allergies   = profile?.allergies    ?? [];
-  const medications = profile?.medications  ?? [];
+  const conditions  = profile?.conditions    ?? [];
+  const allergies   = profile?.allergies     ?? [];
+  const medications = profile?.medications   ?? [];
   const family      = profile?.familyHistory ?? [];
-  const contacts    = profile?.contacts     ?? [];
+  const contacts    = profile?.contacts      ?? [];
   const lifestyle   = profile?.lifestyle;
 
   const lastUpdated = profile?.lastUpdatedAt
-    ? new Date(profile.lastUpdatedAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+    ? new Date(profile.lastUpdatedAt).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })
     : null;
 
-  if (loadStatus === 'loading') {
+  if (loadStatus === "loading") {
     return (
       <div className="flex h-screen overflow-hidden">
         <Sidebar />
@@ -456,7 +467,13 @@ export default function ProfilePage() {
           {/* ══ MOBILE ══ */}
           <div className="lg:hidden px-4 py-4 pb-28 space-y-5 max-w-2xl mx-auto w-full">
 
-            <ProfileFlipCard height={height} weight={weight} bloodType={bloodType} />
+            <ProfileFlipCard
+              name={displayName}
+              patientId={displayId}
+              height={height}
+              weight={weight}
+              bloodType={bloodType}
+            />
 
             {lastUpdated && (
               <div className="bg-blue-50 border-l-4 border-blue-500 rounded-xl p-4">
@@ -486,7 +503,7 @@ export default function ProfilePage() {
                         <span className={`w-2.5 h-2.5 rounded-full ${c.dot} flex-shrink-0`} />
                         <div>
                           <p className="font-semibold text-gray-800">{c.name}</p>
-                          {c.diagnosed !== '—' && <p className="text-xs text-gray-500">Diagnosed: {c.diagnosed}</p>}
+                          {c.diagnosed !== "—" && <p className="text-xs text-gray-500">Diagnosed: {c.diagnosed}</p>}
                         </div>
                       </div>
                       <span className={`px-3 py-1 text-xs font-semibold rounded-lg flex-shrink-0 ${c.bCls}`}>{c.badge}</span>
@@ -611,7 +628,7 @@ export default function ProfilePage() {
                   {contacts.map(c => (
                     <div key={c.name} className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
                       <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center flex-shrink-0 text-gray-600 font-bold text-sm">
-                        {c.name.split(' ').map(w => w[0]).join('').slice(0,2).toUpperCase()}
+                        {c.name.split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase()}
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="font-semibold text-gray-800 text-sm truncate">{c.name}</p>
@@ -642,10 +659,10 @@ export default function ProfilePage() {
                     { label: "Activity", value: lifestyle.activity },
                     { label: "Diet",     value: lifestyle.diet     },
                     { label: "Sleep",    value: lifestyle.sleep    },
-                  ].map(s => s.value && s.value !== '—' ? (
+                  ].map(s => s.value && s.value !== "—" ? (
                     <div key={s.label} className="p-3 bg-gray-50 rounded-xl">
                       <p className="text-xs text-gray-500 mb-0.5">{s.label}</p>
-                      <p className="text-sm font-semibold text-gray-800 capitalize">{s.value.replace(/-/g, ' ')}</p>
+                      <p className="text-sm font-semibold text-gray-800 capitalize">{s.value.replace(/-/g, " ")}</p>
                     </div>
                   ) : null)}
                 </div>
@@ -664,7 +681,14 @@ export default function ProfilePage() {
             {/* Row 1 */}
             <div className="grid grid-cols-3 gap-6 mb-6">
               <div className="col-span-1 space-y-4">
-                <ProfileFlipCard desktop height={height} weight={weight} bloodType={bloodType} />
+                <ProfileFlipCard
+                  desktop
+                  name={displayName}
+                  patientId={displayId}
+                  height={height}
+                  weight={weight}
+                  bloodType={bloodType}
+                />
                 {lastUpdated && (
                   <div className="bg-blue-50 border-l-4 border-blue-500 rounded-xl p-4">
                     <div className="flex items-start gap-2">
@@ -799,7 +823,7 @@ export default function ProfilePage() {
                     {contacts.map(c => (
                       <div key={c.name} className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
                         <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center flex-shrink-0 text-gray-600 font-bold text-xs">
-                          {c.name.split(' ').map(w => w[0]).join('').slice(0,2).toUpperCase()}
+                          {c.name.split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase()}
                         </div>
                         <div className="flex-1 min-w-0">
                           <p className="font-semibold text-gray-800 text-sm truncate">{c.name}</p>

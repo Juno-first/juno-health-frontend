@@ -3,6 +3,7 @@ import {
   Activity, LayoutDashboard, ListOrdered, Building2,
   Users, BarChart3, Settings, LogOut, Bell, ShieldAlert,
 } from "lucide-react";
+import { useLogout } from "../store/hooks/useLogout";
 
 // ── Nav definition ────────────────────────────────────────────────────────────
 
@@ -71,6 +72,7 @@ export function AdminSidebar({
 }: AdminSidebarProps) {
   const navigate = useNavigate();
   const { pathname } = useLocation();
+  const handleLogout = useLogout();
 
   return (
     <aside
@@ -174,6 +176,7 @@ export function AdminSidebar({
           <span className="text-sm font-medium">Settings</span>
         </button>
         <button
+          onClick={handleLogout}
           className="w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-left"
           style={{ color: "rgba(239,68,68,0.7)" }}
           onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(239,68,68,0.08)"; }}

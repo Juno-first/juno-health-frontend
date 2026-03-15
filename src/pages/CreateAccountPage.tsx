@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { ChangeEvent, FormEvent } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../store/hooks/hooks";
 import { register, clearError } from "../store/slices/userSlice";
 import type { RegisterRequest } from "../schemas/auth.schema";
@@ -50,11 +50,11 @@ const PARISHES = [
 ];
 
 const LEFT_FEATURES = [
-  {
-    icon: <ShieldCheck className="w-5 h-5 text-white" />,
-    title: "Secure & Private",
-    desc: "Your health data is protected with 256-bit encryption and HIPAA compliance",
-  },
+  // {
+  //   icon: <ShieldCheck className="w-5 h-5 text-white" />,
+  //   title: "Secure & Private",
+  //   desc: "Your health data is protected with 256-bit encryption and HIPAA compliance",
+  // },
   {
     icon: <Network className="w-5 h-5 text-white" />,
     title: "Unified Network",
@@ -110,6 +110,7 @@ function normalizeLanguage(language: string): string {
 
 export default function CreateAccountPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const dispatch = useAppDispatch();
   const { status, error } = useAppSelector((state) => state.user);
 
@@ -519,21 +520,21 @@ export default function CreateAccountPage() {
                     />
                     <span className="text-xs text-gray-700 leading-relaxed">
                       I agree to the{" "}
-                      <a
-                        href="#"
-                        className="font-semibold hover:underline"
-                        style={{ color: "var(--color-juno-green)" }}
+                      <Link
+                        to="/terms"
+                        state={{ from: location.pathname }}
+                        className="inline-legal-link"
                       >
                         Terms of Service
-                      </a>{" "}
+                      </Link>{" "}
                       and{" "}
-                      <a
-                        href="#"
-                        className="font-semibold hover:underline"
-                        style={{ color: "var(--color-juno-green)" }}
+                      <Link
+                        to="/privacy"
+                        state={{ from: location.pathname }}
+                        className="inline-legal-link"
                       >
                         Privacy Policy
-                      </a>
+                      </Link>
                       . I understand my health data will be securely stored and
                       managed according to HIPAA and Jamaica Data Protection Act
                       standards.
@@ -638,7 +639,7 @@ export default function CreateAccountPage() {
           </div>
 
           <p className="text-center text-[10px] text-gray-300 uppercase tracking-wider pb-8 font-medium">
-            Secure Healthcare Portal · Ministry of Health, Jamaica
+            Secure Healthcare Portal · Wait Watchers, Jamaica
           </p>
         </div>
       </div>

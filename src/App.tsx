@@ -7,6 +7,7 @@ import { autoRefresh } from './store/slices/userSlice'
 import WelcomePage          from './pages/WelcomPage'
 import LoginPage            from './pages/LoginPage'
 import CreateAccountPage    from './pages/CreateAccountPage'
+import { PrivacyPolicyPage, TermsOfServicePage } from './pages/LegalPage'
 import DashboardPage        from './pages/Dashborard'
 import ERQueuePage          from './pages/ERQueuePage'
 import JoinQueuePage        from './pages/JoinQueuePage'
@@ -67,6 +68,8 @@ function App() {
         <Route path="/"         element={<PublicRoute><WelcomePage /></PublicRoute>} />
         <Route path="/login"    element={<PublicRoute><LoginPage /></PublicRoute>} />
         <Route path="/register" element={<PublicRoute><CreateAccountPage /></PublicRoute>} />
+        <Route path="/terms"    element={<TermsOfServicePage />} />
+        <Route path="/privacy"  element={<PrivacyPolicyPage />} />
 
         {/* Protected — redirect to /login if not authenticated */}
         <Route path="/dashboard"       element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />

@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { ShieldCheck, Ambulance, Globe, Network, LogIn, UserPlus, QrCode, Lock } from "lucide-react";
+import { ShieldCheck, Ambulance, Globe, Network, LogIn, UserPlus, Lock } from "lucide-react";
 import logo from "../assets/logo.png";
 
 
@@ -34,7 +34,7 @@ export default function WelcomePage() {
 
           {/* ── LEFT COLUMN (desktop) ── */}
           <div className="hidden lg:flex flex-col items-start flex-1 fade-up">
-            <p className="text-xs font-bold uppercase tracking-[.22em] text-green-700 mb-2">Ministry of Health, Jamaica</p>
+            <p className="text-xs font-bold uppercase tracking-[.22em] text-green-700 mb-2">Wait Watchers, Jamaica</p>
             <div className="mb-3">
               <img src={logo} alt="JUNO" className="w-40 h-auto object-contain" />
             </div>
@@ -111,19 +111,19 @@ export default function WelcomePage() {
             </button>
 
             {/* Divider */}
-            <div className="relative flex items-center gap-3 mb-4 fade-up fade-up-4">
+            {/* <div className="relative flex items-center gap-3 mb-4 fade-up fade-up-4">
               <div className="flex-1 h-px bg-gray-200" />
               <span className="text-xs text-gray-400 font-medium">or</span>
               <div className="flex-1 h-px bg-gray-200" />
-            </div>
+            </div> */}
 
             {/* Emergency QR */}
-            <div className="fade-up fade-up-4">
+            {/* <div className="fade-up fade-up-4">
               <button className="btn-emergency w-full text-red-600 font-semibold py-4 px-6 rounded-2xl flex items-center justify-center gap-3 text-sm">
                 <QrCode className="w-5 h-5" />
                 Scan Emergency QR
               </button>
-            </div>
+            </div> */}
 
             {/* Security note */}
             <div className="glass rounded-2xl p-4 mt-5 fade-up fade-up-5">
@@ -149,7 +149,7 @@ export default function WelcomePage() {
               ))}
             </div>
             <p className="text-center text-[10px] text-gray-300 uppercase tracking-wider mt-3 font-medium">
-              Version 1.0.0 · Ministry of Health, Jamaica
+              Version 1.0.0 · Wait Watchers, Jamaica
             </p>
           </div>
         </div>
