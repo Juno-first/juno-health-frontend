@@ -10,7 +10,7 @@ export default function HealthScoreCard({ size = "md" }) {
   const sw    = size === "lg" ? 10  : 8;
   const circ  = 2 * Math.PI * r;
   // 75% filled → offset = circ * 0.25
-  const offset = circ * 0.25;
+//   const offset = circ * 0.25;
 
   return (
     <div className={`bg-white rounded-3xl p-6 gradient-border slide-up ${size === "lg" ? "" : ""}`}

@@ -1,9 +1,14 @@
 import { configureStore } from '@reduxjs/toolkit';
 import userReducer from './slices/userSlice';
+import queueReducer from './slices/queueSlice';
+import audioAssistantReducer from './slices/audioAssistantSlice';
 
 export const store = configureStore({
   reducer: {
     user: userReducer,
+     queue: queueReducer,
+     audioAssistant: audioAssistantReducer,
+  
   },
 });
 
