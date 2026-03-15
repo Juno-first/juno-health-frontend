@@ -80,6 +80,19 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.9);
 }
 
+.inline-legal-link {
+  color: var(--color-juno-green);
+  font-weight: 600;
+  text-decoration: none;
+  text-underline-offset: 0.18em;
+  transition: color 0.15s ease, text-decoration-color 0.15s ease;
+}
+
+.inline-legal-link:hover {
+  color: #065f46;
+  text-decoration: underline;
+}
+
 /* ── Select custom arrow ── */
 select.input-field {
   appearance: none;

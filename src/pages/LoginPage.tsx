@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../store/hooks/hooks";
 import { login, clearError } from "../store/slices/userSlice";
 import { LoginFormSchema, type LoginFormData } from "../schemas/auth.schema";
 import {
-  ArrowLeft, ShieldCheck, FileText, ShieldHalf, Hospital,
+  ArrowLeft, FileText
+  // , ShieldHalf
+  , Hospital,
   Clock, Users, HelpCircle, Headphones,
 } from "lucide-react";
 import logo from "../assets/logo.png";
@@ -12,7 +14,7 @@ import LoginFormCard from "../components/LoginFormCard";
 
 // ── Desktop left panel ─────────────────────────────────────────────────────────
 const FEATURES = [
-  { icon: <ShieldHalf className="w-5 h-5 text-white" />, title: "Bank-Level Security",  desc: "256-bit encryption protects your health data" },
+  // { icon: <ShieldHalf className="w-5 h-5 text-white" />, title: "Bank-Level Security",  desc: "256-bit encryption protects your health data" },
   { icon: <Hospital    className="w-5 h-5 text-white" />, title: "Nationwide Access",    desc: "Connected to all major healthcare facilities"  },
   { icon: <Clock       className="w-5 h-5 text-white" />, title: "24/7 Availability",    desc: "Access your records anytime, anywhere"         },
   { icon: <Users       className="w-5 h-5 text-white" />, title: "Family Sharing",       desc: "Manage health records for your loved ones"     },
@@ -22,6 +24,7 @@ const FEATURES = [
 export default function LoginPage() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
   const { status, error, user } = useAppSelector(s => s.user);
   const loading = status === "loading";
 
@@ -116,7 +119,7 @@ export default function LoginPage() {
               </a>
             ))}
           </div>
-          <p className="text-emerald-200 text-xs">Ministry of Health, Jamaica • Secure Healthcare Portal</p>
+          <p className="text-emerald-200 text-xs">Wait Watchers, Jamaica • Secure Healthcare Portal</p>
         </div>
       </div>
 
@@ -148,7 +151,7 @@ export default function LoginPage() {
           />
 
           {/* Security notice */}
-          <div className="bg-emerald-50 border-2 border-emerald-200 rounded-2xl p-4 mb-4">
+          {/* <div className="bg-emerald-50 border-2 border-emerald-200 rounded-2xl p-4 mb-4">
             <div className="flex items-start gap-3">
               <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center flex-shrink-0">
                 <ShieldCheck className="w-5 h-5 text-emerald-600" />
@@ -160,7 +163,7 @@ export default function LoginPage() {
                 </p>
               </div>
             </div>
-          </div>
+          </div> */}
 
           {/* Privacy notice */}
           <div className="glass rounded-2xl p-4 mb-5">
@@ -170,16 +173,28 @@ export default function LoginPage() {
               </div>
               <p className="text-xs text-gray-500 leading-relaxed">
                 By logging in, you agree to our{" "}
-                <a href="#" className="font-semibold hover:underline" style={{ color: "var(--color-juno-green)" }}>Terms of Service</a>
+                <Link
+                  to="/terms"
+                  state={{ from: location.pathname }}
+                  className="inline-legal-link"
+                >
+                  Terms of Service
+                </Link>
                 {" "}and{" "}
-                <a href="#" className="font-semibold hover:underline" style={{ color: "var(--color-juno-green)" }}>Privacy Policy</a>.
+                <Link
+                  to="/privacy"
+                  state={{ from: location.pathname }}
+                  className="inline-legal-link"
+                >
+                  Privacy Policy
+                </Link>.
                 {" "}Your health data is managed according to HIPAA and Jamaica Data Protection Act standards.
               </p>
             </div>
           </div>
 
           <p className="text-center text-[10px] text-gray-300 uppercase tracking-wider font-medium">
-            Secure Healthcare Portal • Ministry of Health, Jamaica
+            Secure Healthcare Portal • Wait Watchers, Jamaica
           </p>
         </div>
       </div>
