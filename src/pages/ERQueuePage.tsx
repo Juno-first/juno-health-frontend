@@ -207,7 +207,7 @@ export default function ERQueuePage() {
     // The API needs visitId + departmentId. Since departmentId isn't exposed
     // on the patient-facing status, we pass queueEntryId as departmentId
     // if your backend uses it, or update QueueStatusSchema to include departmentId.
-    report(data.visitId, data.queueEntryId, message);
+    report(data.visitId, data.departmentId, message);
   }
 
   if (checkStatus === "idle" || checkStatus === "checking" || checkStatus === "not_in_queue") {
