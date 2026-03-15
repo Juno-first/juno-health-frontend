@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { onboardingClient }               from '../../libs/api/onboardingClient';
 import type { FormData }                  from '../../pages/HealthOnboardingPage';
+import { OnboardingSurveyResponseSchema } from '../../schemas/onboarding.schema';
 
 // ── Conversion helpers ────────────────────────────────────────────────────────
 
@@ -86,8 +87,17 @@ export function useOnboarding(
     setLoadStatus('loading');
 
     onboardingClient.getProgress()
-      .then(res => {
-        if (cancelled || !res) { setLoadStatus('loaded'); return; }
+      .then(raw => {
+        if (cancelled) return;
+        if (!raw) { setLoadStatus('loaded'); return; }
+
+        // Use safeParse so a partial schema mismatch doesn't abort everything
+        const parsed = OnboardingSurveyResponseSchema.safeParse(raw);
+        if (!parsed.success) {
+          console.warn('[useOnboarding] Schema parse warnings:', parsed.error.issues);
+        }
+        type Res = NonNullable<typeof parsed.data>;
+        const res = (parsed.success ? parsed.data : raw) as Res;
 
         const { ft, in: inches } = cmToFeetIn(res.heightCm);
 
@@ -98,27 +108,30 @@ export function useOnboarding(
             heightFt:  ft,
             heightIn:  inches,
             weight:    kgToLbs(res.weightKg),
-            pregnancy: res.pregnancyStatus ?? "",
+            pregnancy: res.pregnancyStatus  ?? "",
           },
           conditions:    listToConditions(res.conditionsSelected, res.conditionsOtherText),
-          medications:   (res.medications ?? []) as FormData['medications'],
-          allergies:     (res.allergies   ?? []) as FormData['allergies'],
+          medications:   (res.medications   ?? []) as FormData['medications'],
+          allergies:     (res.allergies     ?? []) as FormData['allergies'],
           familyHistory: (res.familyHistory ?? {}) as FormData['familyHistory'],
           lifestyle: {
             smoking:  res.smokingStatus         ?? "",
-            alcohol:  res.alcoholFrequency       ?? "",
-            activity: res.physicalActivityLevel  ?? "",
-            diet:     res.dietPattern            ?? "",
-            sleep:    res.sleepPattern           ?? "",
-            notes:    res.lifestyleNotes         ?? "",
+            alcohol:  res.alcoholFrequency      ?? "",
+            activity: res.physicalActivityLevel ?? "",
+            diet:     res.dietPattern           ?? "",
+            sleep:    res.sleepPattern          ?? "",
+            notes:    res.lifestyleNotes        ?? "",
           },
         }));
 
-        setIsCompleted(res.completed);
+        setIsCompleted(res.completed ?? false);
         setLoadStatus('loaded');
       })
-      .catch(() => {
-        if (!cancelled) setLoadStatus('error');
+      .catch(err => {
+        if (!cancelled) {
+          console.error('[useOnboarding] Failed to load progress:', err);
+          setLoadStatus('error');
+        }
       });
 
     return () => { cancelled = true; };
@@ -128,9 +141,9 @@ export function useOnboarding(
   function buildRequest(data: FormData, markCompleted = false) {
     return {
       // Demographics
-      heightCm:        feetInToCm(data.demographics.heightFt, data.demographics.heightIn),
-      weightKg:        weightLbsToKg(data.demographics.weight),
-      pregnancyStatus: data.demographics.pregnancy || null,
+      heightCm:           feetInToCm(data.demographics.heightFt, data.demographics.heightIn),
+      weightKg:           weightLbsToKg(data.demographics.weight),
+      pregnancyStatus:    data.demographics.pregnancy   || null,
 
       // Conditions
       conditionsNone:      conditionsToList(data.conditions).length === 0,
@@ -150,6 +163,7 @@ export function useOnboarding(
       sleepPattern:          data.lifestyle.sleep     || null,
       lifestyleNotes:        data.lifestyle.notes     || null,
 
+
       markCompleted,
     };
   }
@@ -160,7 +174,6 @@ export function useOnboarding(
     try {
       await onboardingClient.saveProgress(buildRequest(data, false));
       setSaveStatus('saved');
-      // Reset to idle after 2 s so the UI indicator fades
       setTimeout(() => setSaveStatus('idle'), 2000);
     } catch (err: unknown) {
       const msg =
