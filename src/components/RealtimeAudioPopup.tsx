@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { X, Loader2, Square } from "lucide-react";
+import { X, Square } from "lucide-react";
 import { useAudioAssistant } from "../store/hooks/useAudioAssistant";
 
 // ── Waveform bars — animated while talking ────────────────────────────────────
@@ -30,13 +30,14 @@ export function RealtimeAudioPopup() {
   const { isOpen, isPlaying, isLoading, title, text, close, stop } =
     useAudioAssistant();
 
-  // Track whether we're in the process of animating out
-  const [visible, setVisible]   = useState(false);
-  const [closing, setClosing]   = useState(false);
+  const [visible, setVisible] = useState(false);
+  const [closing, setClosing] = useState(false);
 
-  // When isOpen flips true → show; when false → animate out then hide
+  // Only show once audio is actually ready — hide while still loading/preparing
+  const shouldShow = isOpen && !isLoading;
+
   useEffect(() => {
-    if (isOpen) {
+    if (shouldShow) {
       setClosing(false);
       setVisible(true);
     } else if (visible) {
@@ -44,10 +45,10 @@ export function RealtimeAudioPopup() {
       const t = setTimeout(() => {
         setVisible(false);
         setClosing(false);
-      }, 320); // must match animation duration
+      }, 320);
       return () => clearTimeout(t);
     }
-  }, [isOpen]);
+  }, [shouldShow]);
 
   if (!visible) return null;
 
@@ -57,7 +58,6 @@ export function RealtimeAudioPopup() {
   return (
     <>
       <style>{`
-        /* ── Entry ── */
         @keyframes popupInMobile {
           from { opacity: 0; transform: translateY(-16px) scale(0.96); }
           to   { opacity: 1; transform: translateY(0)     scale(1);    }
@@ -66,24 +66,18 @@ export function RealtimeAudioPopup() {
           from { opacity: 0; transform: translateX(28px) scale(0.96); }
           to   { opacity: 1; transform: translateX(0)    scale(1);    }
         }
-
-        /* ── Exit ── */
         @keyframes popupOutMobile {
-          from { opacity: 1; transform: translateY(0)      scale(1);    }
-          to   { opacity: 0; transform: translateY(-16px)  scale(0.96); }
+          from { opacity: 1; transform: translateY(0)     scale(1);    }
+          to   { opacity: 0; transform: translateY(-16px) scale(0.96); }
         }
         @keyframes popupOutDesktop {
           from { opacity: 1; transform: translateX(0)    scale(1);    }
           to   { opacity: 0; transform: translateX(28px) scale(0.96); }
         }
-
-        /* ── Waveform bars ── */
         @keyframes barBounce {
           from { transform: scaleY(0.35); }
           to   { transform: scaleY(1);    }
         }
-
-        /* ── Progress shimmer ── */
         @keyframes shimmer {
           0%   { background-position: 200% 0; }
           100% { background-position: -200% 0; }
@@ -103,17 +97,13 @@ export function RealtimeAudioPopup() {
               <div className="flex-shrink-0 mt-1 flex flex-col items-center gap-2">
                 <div
                   className="w-12 h-12 rounded-2xl flex items-center justify-center transition-colors"
-                  style={{ background: isPlaying && !isLoading ? "rgba(22,163,74,0.12)" : "#f0fdf4" }}
+                  style={{ background: isPlaying ? "rgba(22,163,74,0.12)" : "#f0fdf4" }}
                 >
-                  {isLoading ? (
-                    <Loader2 className="w-5 h-5 text-green-600 animate-spin" />
-                  ) : (
-                    <svg viewBox="0 0 24 24" className="w-5 h-5 fill-green-600">
-                      <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3zm-1 18.93A7 7 0 0 1 5 13H3a9 9 0 0 0 8 8.94V24h2v-2.06A9 9 0 0 0 21 13h-2a7 7 0 0 1-6 6.93z" />
-                    </svg>
-                  )}
+                  <svg viewBox="0 0 24 24" className="w-5 h-5 fill-green-600">
+                    <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3zm-1 18.93A7 7 0 0 1 5 13H3a9 9 0 0 0 8 8.94V24h2v-2.06A9 9 0 0 0 21 13h-2a7 7 0 0 1-6 6.93z" />
+                  </svg>
                 </div>
-                <TalkingWaveform active={isPlaying && !isLoading} />
+                <TalkingWaveform active={isPlaying} />
               </div>
 
               {/* Content */}
@@ -124,7 +114,7 @@ export function RealtimeAudioPopup() {
                       {title || "Juno is speaking"}
                     </p>
                     <p className="text-sm text-gray-700 leading-relaxed line-clamp-3">
-                      {text || "Preparing audio…"}
+                      {text || ""}
                     </p>
                   </div>
                   <button
@@ -140,12 +130,12 @@ export function RealtimeAudioPopup() {
                     <span
                       className="inline-block w-2 h-2 rounded-full"
                       style={{
-                        background: isLoading ? "#facc15" : isPlaying ? "#16a34a" : "#d1d5db",
-                        boxShadow: isPlaying && !isLoading ? "0 0 6px #16a34a88" : "none",
+                        background: isPlaying ? "#16a34a" : "#d1d5db",
+                        boxShadow: isPlaying ? "0 0 6px #16a34a88" : "none",
                       }}
                     />
                     <span className="text-xs text-gray-500">
-                      {isLoading ? "Generating…" : isPlaying ? "Playing now" : "Done"}
+                      {isPlaying ? "Playing now" : "Done"}
                     </span>
                   </div>
                   {isPlaying && (
@@ -162,7 +152,7 @@ export function RealtimeAudioPopup() {
           </div>
 
           {/* Progress bar */}
-          {(isLoading || isPlaying) && (
+          {isPlaying && (
             <div className="h-1 w-full bg-gray-100 overflow-hidden">
               <div
                 className="h-full w-full"
@@ -190,17 +180,13 @@ export function RealtimeAudioPopup() {
               <div className="flex-shrink-0 flex flex-col items-center gap-3">
                 <div
                   className="w-14 h-14 rounded-2xl flex items-center justify-center transition-colors"
-                  style={{ background: isPlaying && !isLoading ? "rgba(22,163,74,0.12)" : "#f0fdf4" }}
+                  style={{ background: isPlaying ? "rgba(22,163,74,0.12)" : "#f0fdf4" }}
                 >
-                  {isLoading ? (
-                    <Loader2 className="w-6 h-6 text-green-600 animate-spin" />
-                  ) : (
-                    <svg viewBox="0 0 24 24" className="w-6 h-6 fill-green-600">
-                      <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3zm-1 18.93A7 7 0 0 1 5 13H3a9 9 0 0 0 8 8.94V24h2v-2.06A9 9 0 0 0 21 13h-2a7 7 0 0 1-6 6.93z" />
-                    </svg>
-                  )}
+                  <svg viewBox="0 0 24 24" className="w-6 h-6 fill-green-600">
+                    <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3zm-1 18.93A7 7 0 0 1 5 13H3a9 9 0 0 0 8 8.94V24h2v-2.06A9 9 0 0 0 21 13h-2a7 7 0 0 1-6 6.93z" />
+                  </svg>
                 </div>
-                <TalkingWaveform active={isPlaying && !isLoading} />
+                <TalkingWaveform active={isPlaying} />
               </div>
 
               {/* Content */}
@@ -221,7 +207,7 @@ export function RealtimeAudioPopup() {
                 </div>
 
                 <p className="text-sm text-gray-600 leading-relaxed mb-4 line-clamp-4">
-                  {text || "Preparing audio…"}
+                  {text || ""}
                 </p>
 
                 <div className="flex items-center justify-between gap-3">
@@ -229,12 +215,12 @@ export function RealtimeAudioPopup() {
                     <span
                       className="inline-block w-2 h-2 rounded-full"
                       style={{
-                        background: isLoading ? "#facc15" : isPlaying ? "#16a34a" : "#d1d5db",
-                        boxShadow: isPlaying && !isLoading ? "0 0 6px #16a34a88" : "none",
+                        background: isPlaying ? "#16a34a" : "#d1d5db",
+                        boxShadow: isPlaying ? "0 0 6px #16a34a88" : "none",
                       }}
                     />
                     <span className="text-xs text-gray-500">
-                      {isLoading ? "Generating…" : isPlaying ? "Playing now" : "Done"}
+                      {isPlaying ? "Playing now" : "Done"}
                     </span>
                   </div>
                   {isPlaying && (
@@ -251,7 +237,7 @@ export function RealtimeAudioPopup() {
           </div>
 
           {/* Progress bar */}
-          {(isLoading || isPlaying) && (
+          {isPlaying && (
             <div className="h-1.5 w-full bg-gray-100 overflow-hidden">
               <div
                 className="h-full w-full"

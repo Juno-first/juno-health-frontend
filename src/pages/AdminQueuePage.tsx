@@ -122,10 +122,11 @@ const AI_INSIGHT_TYPE_CONFIG: Record<
 };
 
 const TIER_GROUPS: { tier: PriorityTier; label: string; dot: string; text: string }[] = [
-  { tier:"EMERGENCY",   label:"Critical Priority",  dot:"#DC2626", text:"#F87171" },
-  { tier:"URGENT",      label:"High Risk Priority", dot:"#F97316", text:"#FB923C" },
-  { tier:"SEMI_URGENT", label:"Moderate Priority",  dot:"#FACC15", text:"#FDE047" },
-  { tier:"NON_URGENT",  label:"Low Priority",       dot:"#22C55E", text:"#4ADE80" },
+  { tier:"RESUSCITATION", label:"Immediate / Resuscitation", dot:"#000000", text:"#FFFFFF" },
+  { tier:"EMERGENCY",     label:"Critical Priority",         dot:"#DC2626", text:"#F87171" },
+  { tier:"URGENT",        label:"High Risk Priority",        dot:"#F97316", text:"#FB923C" },
+  { tier:"SEMI_URGENT",   label:"Moderate Priority",         dot:"#FACC15", text:"#FDE047" },
+  { tier:"NON_URGENT",    label:"Low Priority",              dot:"#22C55E", text:"#4ADE80" },
 ];
 
 function waitMins(iso: string) { return Math.floor((Date.now() - new Date(iso).getTime()) / 60000); }

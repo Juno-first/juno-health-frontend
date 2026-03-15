@@ -142,7 +142,7 @@ function Toggle({ defaultOn = true }: { defaultOn?: boolean }) {
 // ─── Flip Card ────────────────────────────────────────────────────────────────
 function ProfileFlipCard({ desktop = false }: { desktop?: boolean }) {
   const [flipped, setFlipped] = useState(false);
-  const radius = desktop ? 36 : 36;
+//   const radius = desktop ? 36 : 36;
   const roundedCls = desktop ? "rounded-2xl" : "rounded-3xl";
 
   return (

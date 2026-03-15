@@ -37,7 +37,7 @@ class PatientCheckInSocketManager {
   private callbacks:        PatientCheckInCallbacks | null = null;
   private intentional       = false;
   private reconnectTimer:   number | null = null;
-  private hasConnectedOnce  = false;
+//   private hasConnectedOnce  = false;
 
   connect(visitId: string, token: string, callbacks: PatientCheckInCallbacks): void {
     // Same visit already open — just refresh callbacks
@@ -53,7 +53,7 @@ class PatientCheckInSocketManager {
     this.visitId         = visitId;
     this.callbacks       = callbacks;
     this.intentional     = false;
-    this.hasConnectedOnce = false;
+    // this.hasConnectedOnce = false;
 
     this.open(token);
     document.removeEventListener('visibilitychange', this.onVisible);
@@ -95,7 +95,7 @@ class PatientCheckInSocketManager {
     this.socket.onopen = () => {
       this.callbacks?.onStatusChange('connected');
       console.info(`[patientCheckIn] Connected — visit: ${this.visitId}`);
-      this.hasConnectedOnce = true;
+    //   this.hasConnectedOnce = true;
     };
 
     this.socket.onmessage = (event) => {

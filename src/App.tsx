@@ -8,6 +8,7 @@ import JoinQueuePage from './pages/JoinQueuePage'
 import { RealtimeAudioPopup } from './components/RealtimeAudioPopup'
 import AdminQueuePage from './pages/AdminQueuePage'
 import ProfilePage from './pages/ProfilePage'
+import EmergencyWatchPage from './pages/EmergencyWatchPage'
 
 function App() {
 
@@ -20,6 +21,7 @@ function App() {
        <Route path="/er-queue" element={<ERQueuePage />} />
        <Route path="/join-queue" element={<JoinQueuePage />} />
        <Route path="/profile" element={<ProfilePage />} />
+       <Route path="/emergency-watch" element={<EmergencyWatchPage />} />
        <Route path="/admin/queue/:departmentId" element={<AdminQueuePage />} />
 
       </Routes>

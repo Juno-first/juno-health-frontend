@@ -25,7 +25,7 @@ function formatTime(ts: number | null): string {
 const CIRC = 2 * Math.PI * 50;
 
 export default function QueueStatusCard({
-  data, checkedInAt, isLive, onLeave, leaving,
+  data, checkedInAt, isLive
 }: {
   data: QueueStatus;
   checkedInAt: number | null;

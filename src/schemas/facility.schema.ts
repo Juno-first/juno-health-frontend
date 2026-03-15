@@ -8,12 +8,13 @@ export const ServiceSchema = z.object({
 
 export const OpeningHoursSchema = z.record(z.string(), z.string());
 
+// ── Lookup schema (used by JoinQueuePage) ─────────────────────────────────────
 export const FacilityInfoSchema = z.object({
-  facilityName: z.string(),
+  facilityName:    z.string(),
   facilityAddress: z.string(),
-  departmentName: z.string(),
-  openingHours: z.record(z.string(), z.string()).nullable(),
-  services: z.array(ServiceSchema),
+  departmentName:  z.string(),
+  openingHours:    z.record(z.string(), z.string()).nullable(),
+  services:        z.array(ServiceSchema),
 });
 
 export type FacilityInfo = z.infer<typeof FacilityInfoSchema>;
@@ -21,4 +22,30 @@ export type Service      = z.infer<typeof ServiceSchema>;
 
 export function parseFacilityInfo(data: unknown): FacilityInfo {
   return FacilityInfoSchema.parse(data);
+}
+
+// ── Nearby schema (used by EmergencyWatchPage) ────────────────────────────────
+export const NearbyFacilitySchema = z.object({
+  id:             z.string().uuid(),
+  name:           z.string(),
+  description:    z.string(),
+  facilityType:   z.string(),
+  address:        z.string(),
+  parish:         z.string(),
+  latitude:       z.number(),
+  longitude:      z.number(),
+  phone:          z.string(),
+  nhfAccepted:    z.boolean(),
+  checkinCode:    z.string(),
+  qrToken:        z.string(),
+  createdAt:      z.string(),
+  avgWaitMinutes: z.number(),
+  services:       z.array(ServiceSchema),
+  distanceKm:     z.number(),
+});
+
+export type NearbyFacility = z.infer<typeof NearbyFacilitySchema>;
+
+export function parseNearbyFacilities(data: unknown): NearbyFacility[] {
+  return z.array(NearbyFacilitySchema).parse(data);
 }

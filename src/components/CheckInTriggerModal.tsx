@@ -1,5 +1,5 @@
 
-import {type AdminQueueEntry,type PriorityTier} from "../schemas/adminQueue.schema";
+import {type AdminQueueEntry} from "../schemas/adminQueue.schema";
 import { tierColors } from "./CallPatientModal";
 import { useState } from "react";
 import {Brain,X,CircleAlert, CircleCheck,Loader2} from "lucide-react";
