@@ -12,6 +12,7 @@ import LabCard from "../components/LabCard";
 import HealthScoreCard from "../components/HealthScoreCard";
 import DoctorSummaryCard from "../components/DoctorSummaryCard";
 import MedicationCard from "../components/MedicationCard";
+import { useAppSelector } from "../store/hooks/hooks";
 
 // ── Mock data ──────────────────────────────────────────────────────────────────
 const MEDICATIONS = [
@@ -77,6 +78,16 @@ const DOCTOR_SUMMARIES = [
 // ── Main Page ──────────────────────────────────────────────────────────────────
 export default function DashboardPage() {
   const [meds, setMeds] = useState(MEDICATIONS);
+  const user      = useAppSelector(s => s.user.user);
+  const firstName = user?.firstName ?? user?.fullName?.split(" ")[0] ?? "there";
+ 
+  function getGreeting() {
+    const h = new Date().getHours();
+    if (h < 12) return "Good morning";
+    if (h < 17) return "Good afternoon";
+    return "Good evening";
+  }
+  const greeting = getGreeting();
 
    function markTaken(id: number) {
     setMeds((m) => m.map((x) => (x.id === id ? { ...x, done: true } : x)));
@@ -119,7 +130,7 @@ export default function DashboardPage() {
             </div>
             {/* Desktop greeting */}
             <div className="hidden lg:block">
-              <h2 className="text-2xl font-bold text-gray-900">Good morning, Michael</h2>
+               <h2 className="text-2xl font-bold text-gray-900">{greeting}, {firstName}</h2>
               <p className="text-sm text-gray-500">Here's your health summary for today</p>
             </div>
           </div>
@@ -142,7 +153,7 @@ export default function DashboardPage() {
 
           {/* Mobile greeting */}
           <div className="lg:hidden mb-6 fade-up">
-            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-1">Good morning, Michael</h2>
+            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-1">{greeting}, {firstName}</h2>
             <p className="text-gray-500">Here's your health summary for today</p>
           </div>
 
