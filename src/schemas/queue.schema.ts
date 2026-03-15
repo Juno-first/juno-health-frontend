@@ -2,12 +2,7 @@ import { z } from 'zod';
 
 // ── Enums ──────────────────────────────────────────────────────────────────────
 
-export const PriorityTierSchema = z.enum([
-  'CRITICAL',
-  'URGENT',
-  'SEMI_URGENT',
-  'NON_URGENT',
-]);
+export const PriorityTierSchema =z.enum(['RESUSCITATION', 'EMERGENCY', 'URGENT', 'SEMI_URGENT', 'NON_URGENT'])
 export type PriorityTier = z.infer<typeof PriorityTierSchema>;
 
 export const QueueStatusValueSchema = z.enum([
@@ -16,6 +11,7 @@ export const QueueStatusValueSchema = z.enum([
   'DISCHARGED',
   'LEFT_QUEUE',
   'CANCELLED',
+  'IN_PROGRESS'
 ]);
 export type QueueStatusValue = z.infer<typeof QueueStatusValueSchema>;
 

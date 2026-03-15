@@ -3,15 +3,50 @@ import type { QueueStatus,PriorityTier } from "../schemas/queue.schema";
 
 // ── Triage config ──────────────────────────────────────────────────────────────
 
-const TRIAGE_CONFIG: Record<PriorityTier, { level: number; label: string; sub: string; bg: string; text: string }> = {
-  CRITICAL:    { level: 1, label: "Critical",    sub: "Immediate attention required", bg: "bg-red-100",    text: "text-red-600" },
-  URGENT:      { level: 2, label: "Urgent",      sub: "Requires timely attention",    bg: "bg-orange-100", text: "text-orange-600" },
-  SEMI_URGENT: { level: 3, label: "Semi-urgent", sub: "Can wait a short while",       bg: "bg-yellow-100", text: "text-yellow-700" },
-  NON_URGENT:  { level: 4, label: "Non-urgent",  sub: "Can safely wait longer",       bg: "bg-green-100",  text: "text-green-600" },
+const TRIAGE_CONFIG: Record<
+  PriorityTier,
+  { level: number; label: string; sub: string; bg: string; text: string }
+> = {
+  RESUSCITATION: {
+    level: 1,
+    label: "Resuscitation",
+    sub: "Immediate life-saving intervention required",
+    bg: "bg-red-100",
+    text: "text-red-700",
+  },
+  EMERGENCY: {
+    level: 2,
+    label: "Emergency",
+    sub: "Very urgent attention required",
+    bg: "bg-orange-100",
+    text: "text-orange-700",
+  },
+  URGENT: {
+    level: 3,
+    label: "Urgent",
+    sub: "Requires timely attention",
+    bg: "bg-yellow-100",
+    text: "text-yellow-700",
+  },
+  SEMI_URGENT: {
+    level: 4,
+    label: "Semi-urgent",
+    sub: "Can wait a short while",
+    bg: "bg-lime-100",
+    text: "text-lime-700",
+  },
+  NON_URGENT: {
+    level: 5,
+    label: "Non-urgent",
+    sub: "Can safely wait longer",
+    bg: "bg-green-100",
+    text: "text-green-700",
+  },
 };
 
 const TRIAGE_ORDER: PriorityTier[] = [
-  "CRITICAL",
+  "RESUSCITATION",
+  "EMERGENCY",
   "URGENT",
   "SEMI_URGENT",
   "NON_URGENT",
