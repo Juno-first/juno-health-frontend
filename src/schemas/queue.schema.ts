@@ -48,6 +48,7 @@ export const QueueStatusSchema = z.object({
   qrToken: z.string(),
   checkinCode: z.string(),
   checkedInAt: z.string(),
+  departmentId: z.string().uuid(),
 
   roomName: z.string().nullable().optional(),
   assignedStaffName: z.string().nullable().optional(),
