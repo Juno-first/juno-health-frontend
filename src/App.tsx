@@ -5,6 +5,7 @@ import { Routes, Route } from 'react-router-dom'
 import DashboardPage from './pages/Dashborard'
 import ERQueuePage from './pages/ERQueuePage'
 import JoinQueuePage from './pages/JoinQueuePage'
+import { RealtimeAudioPopup } from './components/RealtimeAudioPopup'
 
 function App() {
 
@@ -17,6 +18,8 @@ function App() {
        <Route path="/er-queue" element={<ERQueuePage />} />
        <Route path="/join-queue" element={<JoinQueuePage />} />
       </Routes>
+      <RealtimeAudioPopup />
+
     </>
   )
 }
