@@ -1,7 +1,7 @@
 import { useEffect,useRef } from "react";
 import {
-  Bell, QrCode,Clock,Phone, X,
-  Stethoscope, Bed, PersonStanding, Menu, Hospital,
+  Bell, QrCode,Phone, X,
+    Menu, Hospital,
    Loader2, Wifi, WifiOff,
 } from "lucide-react";
 import { Sidebar, BottomNav } from "../components/AppNav";
@@ -16,15 +16,6 @@ import QuickActionsGrid from "../components/QuickActionsGrid";
 import DepartmentCard from "../components/DepartmentCard";
 import ImportantInfoCard from "../components/ImportantInfoCard";
 import StatusUpdatesCard from "../components/StatusUpdatesCard";
-
-const DEPT_STATS = [
-  { label: "Physicians", value: "4",  Icon: Stethoscope,    bg: "bg-green-50",  border: "border-green-200",  val: "text-green-700"  },
-  { label: "Nurses",     value: "12", Icon: PersonStanding, bg: "bg-purple-50", border: "border-purple-200", val: "text-purple-700" },
-  { label: "Rooms",      value: "3",  Icon: Bed,            bg: "bg-orange-50", border: "border-orange-200", val: "text-orange-700" },
-  { label: "Avg Wait",   value: "52", Icon: Clock,          bg: "bg-red-50",    border: "border-red-200",    val: "text-red-700"    },
-];
-
-
 
 
 export default function ERQueuePage() {

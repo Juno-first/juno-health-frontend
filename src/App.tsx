@@ -4,7 +4,7 @@ import CreateAccountPage from './pages/CreateAccountPage'
 import { Routes, Route } from 'react-router-dom'
 import DashboardPage from './pages/Dashborard'
 import ERQueuePage from './pages/ERQueuePage'
-
+import JoinQueuePage from './pages/JoinQueuePage'
 
 function App() {
 
@@ -15,6 +15,7 @@ function App() {
        <Route path="/register" element={<CreateAccountPage />} />
        <Route path="/dashboard" element={<DashboardPage />} />
        <Route path="/er-queue" element={<ERQueuePage />} />
+       <Route path="/join-queue" element={<JoinQueuePage />} />
       </Routes>
     </>
   )
