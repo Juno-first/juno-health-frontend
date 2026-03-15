@@ -4,7 +4,7 @@ import {
 } from '../../schemas/queueInsights.schema';
 
 const INSIGHTS_BASE_URL =
-  (import.meta.env.VITE_AI_API_URL ?? 'http://localhost:8000').replace(/\/+$/, '');
+  (import.meta.env.VITE_AI_API_URL ?? 'https://staging.ai.waitwatchers.live/').replace(/\/+$/, '');
 
 export type InsightsSocketStatus =
   | 'idle'

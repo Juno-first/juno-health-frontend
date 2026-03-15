@@ -5,6 +5,8 @@ import {
   type QueueStatus,
   type PushSubscribeRequest,
 } from '../../schemas/queue.schema';
+import axios from 'axios';
+const AI_BASE = import.meta.env.VITE_AI_API_URL ?? 'http://localhost:8000';
 
 export const queueClient = {
   /** GET /queue/status — null on 204 (not in queue) */
@@ -33,5 +35,20 @@ export const queueClient = {
 
   unsubscribePush: async (endpoint: string): Promise<void> => {
     await api.delete('/push/subscribe', { data: { endpoint } });
+  },
+  
+  /**
+   * POST {AI_BASE}/patient/discomfort
+   * Notify the department that a patient's condition is worsening.
+   */
+  reportDiscomfort: async (payload: {
+    visitId:      string;
+    departmentId: string;
+    message:      string;
+  }): Promise<void> => {
+    const token = localStorage.getItem('accessToken') ?? '';
+    await axios.post(`${AI_BASE}/patient/discomfort`, payload, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
   },
 };

@@ -21,6 +21,7 @@ import WhatNextCard from "../components/WhatNextCard";
 import CodeInput from "../components/CodeInput";
 import QueueForm from "../components/QueueForm";
 import type { FormState } from "../components/QueueForm";
+import { useRef } from "react";
 
 
 
@@ -33,6 +34,7 @@ export default function JoinQueuePage() {
   const { playWelcomeAudio } = useAudioAssistant();
   const [showScanner, setShowScanner] = useState(false);
   const accessToken = useAppSelector((s) => s.user.accessToken);
+  const facilityCardRef = useRef<HTMLDivElement>(null);
 
 //   const [method, setMethod] = useState<CheckInMethod>("CODE");
   const [formErrors, setFormErrors] = useState<string[]>([]);
@@ -226,6 +228,9 @@ export default function JoinQueuePage() {
         </div>
 
         <button
+         onClick={() => {
+            facilityCardRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+            }}
           type="button"
           className="w-full bg-blue-600 text-white rounded-2xl py-4 font-bold text-lg flex items-center justify-center gap-3 hover:bg-blue-700 transition-all"
         >
@@ -337,7 +342,9 @@ export default function JoinQueuePage() {
         <div className="flex-1 overflow-y-auto">
           <div className="lg:hidden px-4 py-4 pb-28 space-y-6">
             {codeSection}
-            {showFacilityCard && <FacilityCard {...facilityCardProps} />}
+            {showFacilityCard && (
+            <FacilityCard ref={facilityCardRef} {...facilityCardProps} />
+            )}
             {showSymptoms && (
               <div className="bg-white rounded-3xl p-6 shadow-[0_4px_20px_-2px_rgba(0,0,0,0.05)]">
                 <div className="flex items-center gap-3 mb-5">
@@ -429,6 +436,9 @@ export default function JoinQueuePage() {
                       </div>
 
                       <button
+                       onClick={() => {
+                        facilityCardRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+                        }}
                         type="button"
                         className="w-full bg-blue-600 text-white rounded-2xl py-4 font-bold text-base flex items-center justify-center gap-3 hover:bg-blue-700 transition-all"
                       >

@@ -1,26 +1,22 @@
+import { forwardRef } from "react";
 import {
   CheckCircle2,
-  MapPin, Clock,Hospital,
+  MapPin, Clock, Hospital,
   Loader2, XCircle,
 } from "lucide-react";
 import { useFacilityLookup } from "../store/hooks/useFacility";
 
-export default function FacilityCard({
-  facility,
-  loading,
-  lookupError,
-  onWrongFacility,
-  compact = false,
-}: {
-  facility: ReturnType<typeof useFacilityLookup>["facility"];
-  loading: boolean;
-  lookupError: string | null;
+const FacilityCard = forwardRef<HTMLDivElement, {
+  facility:       ReturnType<typeof useFacilityLookup>["facility"];
+  loading:        boolean;
+  lookupError:    string | null;
   onWrongFacility?: () => void;
-  compact?: boolean;
-}) {
+  compact?:       boolean;
+}>(({ facility, loading, lookupError, onWrongFacility, compact = false }, ref) => {
+
   if (loading) {
     return (
-      <div className={`bg-white rounded-3xl shadow-[0_4px_20px_-2px_rgba(0,0,0,0.05)] ${compact ? "p-5" : "p-6"}`}>
+      <div ref={ref} className={`bg-white rounded-3xl shadow-[0_4px_20px_-2px_rgba(0,0,0,0.05)] ${compact ? "p-5" : "p-6"}`}>
         <div className="flex items-center gap-3 mb-5">
           <div className="w-12 h-12 rounded-xl bg-gray-100 animate-pulse flex-shrink-0" />
           <div className="space-y-2 flex-1">
@@ -28,9 +24,7 @@ export default function FacilityCard({
             <div className="h-3 bg-gray-100 animate-pulse rounded w-1/2" />
           </div>
         </div>
-
         <div className="rounded-2xl h-32 bg-gray-100 animate-pulse mb-4" />
-
         <div className="flex items-center justify-center gap-2 text-gray-400 text-sm py-2">
           <Loader2 size={14} className="animate-spin" /> Looking up facility…
         </div>
@@ -40,7 +34,7 @@ export default function FacilityCard({
 
   if (lookupError) {
     return (
-      <div className={`bg-white rounded-3xl shadow-[0_4px_20px_-2px_rgba(0,0,0,0.05)] ${compact ? "p-5" : "p-6"}`}>
+      <div ref={ref} className={`bg-white rounded-3xl shadow-[0_4px_20px_-2px_rgba(0,0,0,0.05)] ${compact ? "p-5" : "p-6"}`}>
         <div className="flex items-center gap-3 mb-4">
           <div className="w-12 h-12 rounded-xl bg-red-100 flex items-center justify-center flex-shrink-0">
             <XCircle size={22} className="text-red-500" />
@@ -50,11 +44,9 @@ export default function FacilityCard({
             <p className="text-sm text-gray-500">Check the code and try again</p>
           </div>
         </div>
-
         <div className="bg-red-50 border border-red-200 rounded-xl p-4 mb-4">
           <p className="text-sm text-red-600">{lookupError}</p>
         </div>
-
         {onWrongFacility && (
           <button
             onClick={onWrongFacility}
@@ -69,11 +61,11 @@ export default function FacilityCard({
 
   if (!facility) return null;
 
-  const today = new Date().toLocaleDateString("en-US", { weekday: "long" }).toLowerCase();
+  const today      = new Date().toLocaleDateString("en-US", { weekday: "long" }).toLowerCase();
   const todayHours = facility.openingHours?.[today] ?? null;
 
   return (
-    <div className={`bg-white rounded-3xl shadow-[0_4px_20px_-2px_rgba(0,0,0,0.05)] ${compact ? "p-5" : "p-6"}`}>
+    <div ref={ref} className={`bg-white rounded-3xl shadow-[0_4px_20px_-2px_rgba(0,0,0,0.05)] ${compact ? "p-5" : "p-6"}`}>
       <div className="flex items-center gap-3 mb-5">
         <div className="w-12 h-12 rounded-xl bg-green-100 flex items-center justify-center flex-shrink-0">
           <CheckCircle2 size={22} className="text-green-600" />
@@ -100,7 +92,6 @@ export default function FacilityCard({
             <MapPin size={14} className="text-white/80 mt-0.5 flex-shrink-0" />
             <p className="text-sm text-white/90">{facility.facilityAddress}</p>
           </div>
-
           <div className="flex items-start gap-3">
             <Clock size={14} className="text-white/80 mt-0.5 flex-shrink-0" />
             {todayHours !== null && (
@@ -144,4 +135,8 @@ export default function FacilityCard({
       )}
     </div>
   );
-}
+});
+
+FacilityCard.displayName = "FacilityCard";
+
+export default FacilityCard;
