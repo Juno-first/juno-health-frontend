@@ -24,6 +24,20 @@ export function parseFacilityInfo(data: unknown): FacilityInfo {
   return FacilityInfoSchema.parse(data);
 }
 
+// ── Route schema ──────────────────────────────────────────────────────────────
+// geometry is an array of line-strings, each line-string is an array of [lng, lat] pairs
+
+export const RouteSchema = z.object({
+  distanceMeters:  z.number(),
+  durationSeconds: z.number(),
+  durationMinutes: z.number(),
+  steps:           z.array(z.string()),
+  // array of line-strings → array of [lng, lat] coordinate pairs
+  geometry:        z.array(z.array(z.tuple([z.number(), z.number()]))),
+});
+
+export type Route = z.infer<typeof RouteSchema>;
+
 // ── Nearby schema (used by EmergencyWatchPage) ────────────────────────────────
 export const NearbyFacilitySchema = z.object({
   id:             z.string().uuid(),
@@ -42,6 +56,7 @@ export const NearbyFacilitySchema = z.object({
   avgWaitMinutes: z.number(),
   services:       z.array(ServiceSchema),
   distanceKm:     z.number(),
+  route:          RouteSchema.nullable().optional(),
 });
 
 export type NearbyFacility = z.infer<typeof NearbyFacilitySchema>;

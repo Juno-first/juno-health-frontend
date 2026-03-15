@@ -24,7 +24,7 @@ import type { FormState } from "../components/QueueForm";
 
 
 
-type CheckInMethod = "CODE" | "QR";
+// type CheckInMethod = "CODE" | "QR";
 
 
 export default function JoinQueuePage() {
@@ -34,7 +34,7 @@ export default function JoinQueuePage() {
   const [showScanner, setShowScanner] = useState(false);
   const accessToken = useAppSelector((s) => s.user.accessToken);
 
-  const [method, setMethod] = useState<CheckInMethod>("CODE");
+//   const [method, setMethod] = useState<CheckInMethod>("CODE");
   const [formErrors, setFormErrors] = useState<string[]>([]);
   const [form, setForm] = useState<FormState>({
     symptoms: "",
@@ -81,9 +81,9 @@ export default function JoinQueuePage() {
     }
 
     setFormErrors([]);
-
+    const token = form.queueCode.trim();
     return {
-      method,
+      method: token.toUpperCase().startsWith("FAC-") ? "QR" : "CODE",
       token: form.queueCode.trim(),
       presentingComplaint: form.symptoms.trim(),
       symptomSeverity: SEVERITY_MAP[form.severity!],
@@ -171,7 +171,7 @@ export default function JoinQueuePage() {
           <QrScanner
             id="qr-scanner-mobile"
             onScan={(decoded) => {
-              setMethod("QR");
+            //   setMethod("QR");
               setForm(f => ({ ...f, queueCode: decoded }));
               setShowScanner(false);
             }}
@@ -226,7 +226,6 @@ export default function JoinQueuePage() {
         </div>
 
         <button
-          onClick={() => setMethod("CODE")}
           type="button"
           className="w-full bg-blue-600 text-white rounded-2xl py-4 font-bold text-lg flex items-center justify-center gap-3 hover:bg-blue-700 transition-all"
         >
@@ -381,7 +380,7 @@ export default function JoinQueuePage() {
                         <QrScanner
                           id="qr-scanner-desktop"
                           onScan={(decoded) => {
-                            setMethod("QR");
+                            // setMethod("QR");
                             setForm(f => ({ ...f, queueCode: decoded }));
                             setShowScanner(false);
                           }}
@@ -430,7 +429,6 @@ export default function JoinQueuePage() {
                       </div>
 
                       <button
-                        onClick={() => setMethod("CODE")}
                         type="button"
                         className="w-full bg-blue-600 text-white rounded-2xl py-4 font-bold text-base flex items-center justify-center gap-3 hover:bg-blue-700 transition-all"
                       >

@@ -24,7 +24,7 @@ export function useQueueInsights(departmentId: string): UseQueueInsightsResult {
   useEffect(() => {
     if (!departmentId) return;
 
-    const token = localStorage.getItem('token') ?? '';
+    const token = localStorage.getItem('accessToken') ?? '';
 
     queueInsightsSocket.connect(departmentId, token, {
       onMessage: handleMessage,
