@@ -638,7 +638,7 @@ export default function CreateAccountPage() {
           </div>
 
           <p className="text-center text-[10px] text-gray-300 uppercase tracking-wider pb-8 font-medium">
-            Secure Healthcare Portal · Ministry of Health, Jamaica
+            Secure Healthcare Portal · Wait Watchers, Jamaica
           </p>
         </div>
       </div>

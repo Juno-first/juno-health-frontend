@@ -116,7 +116,7 @@ export default function LoginPage() {
               </a>
             ))}
           </div>
-          <p className="text-emerald-200 text-xs">Ministry of Health, Jamaica • Secure Healthcare Portal</p>
+          <p className="text-emerald-200 text-xs">Wait Watchers, Jamaica • Secure Healthcare Portal</p>
         </div>
       </div>
 
@@ -179,7 +179,7 @@ export default function LoginPage() {
           </div>
 
           <p className="text-center text-[10px] text-gray-300 uppercase tracking-wider font-medium">
-            Secure Healthcare Portal • Ministry of Health, Jamaica
+            Secure Healthcare Portal • Wait Watchers, Jamaica
           </p>
         </div>
       </div>

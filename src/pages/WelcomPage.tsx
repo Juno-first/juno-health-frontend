@@ -34,7 +34,7 @@ export default function WelcomePage() {
 
           {/* ── LEFT COLUMN (desktop) ── */}
           <div className="hidden lg:flex flex-col items-start flex-1 fade-up">
-            <p className="text-xs font-bold uppercase tracking-[.22em] text-green-700 mb-2">Ministry of Health, Jamaica</p>
+            <p className="text-xs font-bold uppercase tracking-[.22em] text-green-700 mb-2">Wait Watchers, Jamaica</p>
             <div className="mb-3">
               <img src={logo} alt="JUNO" className="w-40 h-auto object-contain" />
             </div>
@@ -149,7 +149,7 @@ export default function WelcomePage() {
               ))}
             </div>
             <p className="text-center text-[10px] text-gray-300 uppercase tracking-wider mt-3 font-medium">
-              Version 1.0.0 · Ministry of Health, Jamaica
+              Version 1.0.0 · Wait Watchers, Jamaica
             </p>
           </div>
         </div>
