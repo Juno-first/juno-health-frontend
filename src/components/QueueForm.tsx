@@ -1,18 +1,39 @@
 import {
   HeartPulse, Wind, Scan, Droplets, Hand, Thermometer, Bone,
-  AlertCircle
+  AlertCircle, TrendingUp,Activity,Brain,Eye,Zap,Gauge,Baby,Siren,FlaskConical
 } from "lucide-react";
 import PainSlider from "./PainSlider";
 
 const SYMPTOM_CATEGORIES = [
-  { id: "chest", Icon: HeartPulse, label: "Chest pain", color: "text-red-500" },
-  { id: "breathing", Icon: Wind, label: "Difficulty breathing", color: "text-blue-500" },
-  { id: "dizziness", Icon: Scan, label: "Dizziness", color: "text-purple-500" },
-  { id: "vomiting", Icon: Droplets, label: "Vomiting", color: "text-green-500" },
-  { id: "bleeding", Icon: Hand, label: "Bleeding", color: "text-red-500" },
-  { id: "fever", Icon: Thermometer, label: "Fever", color: "text-orange-500" },
-  { id: "injury", Icon: Bone, label: "Injury", color: "text-gray-600" },
-  { id: "allergy", Icon: AlertCircle, label: "Allergic reaction", color: "text-yellow-500" },
+  // ── Cardiovascular & Respiratory ─────────────────────────────────────────
+  { id: "chest",        Icon: HeartPulse,   label: "Chest Pain",              color: "text-red-500"    },
+  { id: "breathing",    Icon: Wind,         label: "Difficulty Breathing",    color: "text-blue-500"   },
+  { id: "highbp",       Icon: TrendingUp,   label: "High BP + Symptoms",      color: "text-red-600"    },
+  { id: "heartrate",    Icon: Activity,     label: "Abnormal Heart Rate",     color: "text-orange-500" },
+
+  // ── Neurological ──────────────────────────────────────────────────────────
+  { id: "stroke",       Icon: Brain,        label: "Stroke (FAST Symptoms)",  color: "text-purple-500" },
+  { id: "confusion",    Icon: Eye,          label: "Confusion / Unresponsive",color: "text-purple-600" },
+  { id: "headache",     Icon: Zap,          label: "Sudden Severe Headache",  color: "text-yellow-500" },
+  { id: "seizure",      Icon: Activity,     label: "Seizure",                 color: "text-purple-400" },
+
+  // ── Vital Sign Red Zones ──────────────────────────────────────────────────
+  { id: "oxygen",       Icon: Gauge,        label: "Low Oxygen (SpO₂ <94%)", color: "text-blue-600"   },
+  { id: "highfever",    Icon: Thermometer,  label: "High Fever (>104°F)",     color: "text-orange-500" },
+  { id: "infantfever",  Icon: Baby,         label: "Infant Fever",            color: "text-pink-500"   },
+
+  // ── Trauma & Pain ─────────────────────────────────────────────────────────
+  { id: "bleeding",     Icon: Hand,         label: "Bleeding",                color: "text-red-500"    },
+  { id: "uncontrolled", Icon: Droplets,     label: "Uncontrolled Bleeding",   color: "text-red-600"    },
+  { id: "extremepain",  Icon: Siren,        label: "Extreme Pain (10/10)",    color: "text-red-600"    },
+  { id: "poisoning",    Icon: FlaskConical, label: "Poisoning / Overdose",    color: "text-green-600"  },
+  { id: "injury",       Icon: Bone,         label: "Injury",                  color: "text-gray-600"   },
+
+  // ── General ───────────────────────────────────────────────────────────────
+  { id: "fever",        Icon: Thermometer,  label: "Fever",                   color: "text-orange-400" },
+  { id: "vomiting",     Icon: Droplets,     label: "Vomiting / Nausea",       color: "text-green-500"  },
+  { id: "dizziness",    Icon: Scan,         label: "Dizziness",               color: "text-purple-500" },
+  { id: "allergy",      Icon: AlertCircle,  label: "Allergic Reaction",       color: "text-yellow-500" },
 ];
 
 type Severity = "mild" | "moderate" | "severe" | "emergency" | null;
