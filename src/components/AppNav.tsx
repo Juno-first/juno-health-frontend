@@ -1,4 +1,6 @@
 import { useNavigate, useLocation } from "react-router-dom";
+import { useSelector } from "react-redux";
+import type { RootState } from "../store"; // adjust path to your store
 import {
   Activity, House, FolderOpen, CalendarDays,
   Hospital, User, Pill, FlaskConical, Bot,
@@ -25,6 +27,21 @@ export const SIDEBAR_NAV_ITEMS = [
   { id: "medbot",    label: "Ask MedBot",            Icon: Bot,          path: "/medbot"    },
 ];
 
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
+/** Derive 1–2 uppercase initials from the token user. */
+function getInitials(firstName?: string, lastName?: string, fallback = "?"): string {
+  const first = firstName?.trim()[0] ?? "";
+  const last  = lastName?.trim()[0]  ?? "";
+  return (first + last).toUpperCase() || fallback.toUpperCase();
+}
+
+/** Return the display ID shown under the user's name. */
+function getDisplayId(user: NonNullable<RootState["user"]["user"]>): string {
+  if (user.accountType === "PATIENT") return `Patient ID: ${user.patientId}`;
+  return `${user.staffRole} · ${user.staffId}`;
+}
+
 // ── Shared Bottom Nav (mobile) ────────────────────────────────────────────────
 export function BottomNav() {
   const navigate = useNavigate();
@@ -34,35 +51,42 @@ export function BottomNav() {
     <>
       <PWAInstallBanner />
       <nav
-      className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 z-50"
-      style={{ boxShadow: "0 -4px 12px rgba(0,0,0,.06)" }}
-    >
-      <div className="flex items-center justify-around px-4 py-3">
-        {BOTTOM_NAV_ITEMS.map(({ id, label, Icon, path }) => {
-          const active = pathname === path || (path !== "/dashboard" && pathname.startsWith(path));
-          return (
-            <button
-              key={id}
-              onClick={() => navigate(path)}
-              className={`nav-tab ${active ? "active" : ""}`}
-            >
-              <div className="nav-tab-icon">
-                <Icon className="w-5 h-5" />
-              </div>
-              <span className="text-xs font-semibold">{label}</span>
-            </button>
-          );
-        })}
-      </div>
-    </nav>
+        className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 z-50"
+        style={{ boxShadow: "0 -4px 12px rgba(0,0,0,.06)" }}
+      >
+        <div className="flex items-center justify-around px-4 py-3">
+          {BOTTOM_NAV_ITEMS.map(({ id, label, Icon, path }) => {
+            const active = pathname === path || (path !== "/dashboard" && pathname.startsWith(path));
+            return (
+              <button
+                key={id}
+                onClick={() => navigate(path)}
+                className={`nav-tab ${active ? "active" : ""}`}
+              >
+                <div className="nav-tab-icon">
+                  <Icon className="w-5 h-5" />
+                </div>
+                <span className="text-xs font-semibold">{label}</span>
+              </button>
+            );
+          })}
+        </div>
+      </nav>
     </>
   );
 }
 
 // ── Shared Sidebar (desktop) ──────────────────────────────────────────────────
-export function Sidebar({ user = { name: "Michael Johnson", id: "JM-8472", initials: "MJ" } }) {
+export function Sidebar() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
+
+  // Pull user directly from the Redux store (populated from the JWT by userSlice)
+  const user = useSelector((state: RootState) => state.user.user);
+
+  const initials  = user ? getInitials(user.firstName, user.lastName, user.fullName) : "?";
+  const fullName  = user?.fullName  ?? "Guest";
+  const displayId = user ? getDisplayId(user) : "";
 
   return (
     <aside
@@ -91,14 +115,15 @@ export function Sidebar({ user = { name: "Michael Johnson", id: "JM-8472", initi
             <p className="text-xs text-gray-500">Healthcare Intelligence</p>
           </div>
         </div>
-        {/* User card */}
+
+        {/* User card — populated from token */}
         <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
           <div className="w-12 h-12 rounded-xl bg-blue-200 flex items-center justify-center flex-shrink-0 font-bold text-blue-800 text-sm">
-            {user.initials}
+            {initials}
           </div>
           <div className="flex-1 min-w-0">
-            <p className="font-semibold text-sm text-gray-900 truncate">{user.name}</p>
-            <p className="text-xs text-gray-500">Patient ID: {user.id}</p>
+            <p className="font-semibold text-sm text-gray-900 truncate">{fullName}</p>
+            <p className="text-xs text-gray-500 truncate">{displayId}</p>
           </div>
         </div>
       </div>

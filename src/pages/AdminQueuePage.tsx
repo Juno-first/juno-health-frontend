@@ -4,8 +4,8 @@ import { AdminSidebar, AdminBottomNav } from "../components/AdminAppNav";
 import {
   Users, Clock, HeartPulse, Hourglass, Gauge,
   Brain, Bell, RefreshCw, Filter, Wifi, WifiOff,
-  Eye, UserCheck, TriangleAlert, ChevronDown, ChevronUp,
-  GripVertical, ArrowUp, Ellipsis, X, Phone,
+  UserCheck, TriangleAlert, ChevronDown, ChevronUp,
+  GripVertical, ArrowUp,X, Phone,
   Stethoscope, CircleAlert, CircleCheck, BedDouble,
   Lightbulb, ChartNoAxesCombined, UserRound, Loader2,
 } from "lucide-react";
@@ -167,9 +167,6 @@ function getRelatedEntry(insight: QueueInsight, entries: AdminQueueEntry[]) {
   if (typeof insight.subjectPosition !== "number") return null;
   return entries.find(e => e.position === insight.subjectPosition) ?? null;
 }
-
-
-
 
 
 // ── Patient Drawer ─────────────────────────────────────────────────────────────
