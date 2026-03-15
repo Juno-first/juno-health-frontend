@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useOnboarding } from "../store/hooks/useOnboarding";
+import { Loader2, CheckCircle2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import {
   ArrowLeft, ArrowRight, Check, Plus, Trash2,
@@ -666,6 +668,9 @@ function StepEmergencyContacts({ data, setData }: StepProps) {
   );
 }
 
+// ─── Export FormData for useOnboarding hook ──────────────────────────────────
+export type { FormData };
+
 // ─── Initial data ─────────────────────────────────────────────────────────────
 
 const INITIAL: FormData = {
@@ -690,16 +695,32 @@ export default function HealthOnboardingPage() {
   const [step, setStep] = useState(1);
   const [data, setData] = useState<FormData>(INITIAL);
 
+  const { loadStatus, saveStatus, saveError, complete, saveStep } = useOnboarding(setData);
+
   const TOTAL    = STEPS.length;
   const progress = Math.round((step / TOTAL) * 100);
   const isLast   = step === TOTAL;
 
-  function goTo(s: number) {
+  async function goTo(s: number) {
+    // Auto-save when moving forward
+    if (s > step) await saveStep(data, step);
     setStep(s);
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   const StepContent = STEP_COMPONENTS[step - 1];
+
+  // Show loading screen while fetching existing progress
+  if (loadStatus === 'loading') {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-gray-50">
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="w-10 h-10 animate-spin" style={{ color: "var(--color-juno-green)" }} />
+          <p className="text-gray-600 font-medium">Loading your health profile…</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-screen">
@@ -808,6 +829,18 @@ export default function HealthOnboardingPage() {
 
           <StepContent key={step} data={data} setData={setData} />
 
+          {/* Save status indicator */}
+          {saveStatus === 'saved' && (
+            <div className="flex items-center gap-2 text-green-600 text-sm font-medium mb-2">
+              <CheckCircle2 className="w-4 h-4" /> Progress saved
+            </div>
+          )}
+          {saveStatus === 'error' && saveError && (
+            <div className="flex items-center gap-2 text-red-600 text-sm font-medium mb-2">
+              <span>⚠ {saveError}</span>
+            </div>
+          )}
+
           <div className="flex gap-3 lg:gap-4 sticky bottom-0 pt-2 pb-4"
                style={{ background: "linear-gradient(to top, #f0fdf4 60%, transparent)" }}>
             {step > 1 && (
@@ -816,9 +849,20 @@ export default function HealthOnboardingPage() {
                 <ArrowLeft className="w-4 h-4" /> Previous
               </button>
             )}
-            <button onClick={isLast ? () => navigate("/dashboard") : () => goTo(step + 1)}
-              className="btn-primary flex-1 text-white font-bold py-4 px-6 rounded-xl flex items-center justify-center gap-2 text-sm">
-              {isLast ? <><Check className="w-4 h-4" /> Complete Setup</> : <>Next Step <ArrowRight className="w-4 h-4" /></>}
+            <button
+              onClick={isLast
+                ? async () => { await complete(data); navigate("/dashboard"); }
+                : () => goTo(step + 1)}
+              disabled={saveStatus === 'saving'}
+              className="btn-primary flex-1 text-white font-bold py-4 px-6 rounded-xl flex items-center justify-center gap-2 text-sm disabled:opacity-70"
+            >
+              {saveStatus === 'saving' ? (
+                <><Loader2 className="w-4 h-4 animate-spin" /> Saving…</>
+              ) : isLast ? (
+                <><Check className="w-4 h-4" /> Complete Setup</>
+              ) : (
+                <>Next Step <ArrowRight className="w-4 h-4" /></>
+              )}
             </button>
           </div>
 
