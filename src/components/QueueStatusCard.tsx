@@ -112,11 +112,13 @@ export default function QueueStatusCard({
           style={{
             backfaceVisibility: "hidden",
             WebkitBackfaceVisibility: "hidden",
+            willChange: "transform",
+            transform: "translateZ(0)",
             boxShadow: isCalled
-              ? "0 0 30px rgba(16,185,129,.35)"
-              : "0 10px 30px -5px rgba(239,68,68,.35)",
+                ? "0 0 30px rgba(16,185,129,.35)"
+                : "0 10px 30px -5px rgba(239,68,68,.35)",
             pointerEvents: flipped ? "none" : "auto",
-          }}
+           }}
         >
           {/* Animated background blobs */}
           <div className="absolute top-0 right-0 w-40 h-40 bg-white/10 rounded-full -mr-20 -mt-20 pointer-events-none" />
@@ -375,11 +377,13 @@ export default function QueueStatusCard({
           style={{
             backfaceVisibility: "hidden",
             WebkitBackfaceVisibility: "hidden",
-            transform: "rotateY(180deg)",
+            willChange: "transform",
+            transform: "rotateY(180deg) translateZ(0)",
+            visibility: flipped ? "visible" : "hidden",
             boxShadow: isCalled
-              ? "0 0 30px rgba(16,185,129,.35)"
-              : "0 10px 30px -5px rgba(239,68,68,.35)",
-          }}
+                ? "0 0 30px rgba(16,185,129,.35)"
+                : "0 10px 30px -5px rgba(239,68,68,.35)",
+            }}
         >
           {/* top right decorative blob */}
           <div className="absolute top-0 right-0 w-40 h-40 bg-white/10 rounded-full -mr-20 -mt-20 pointer-events-none" />
