@@ -1,6 +1,6 @@
 import './App.css'
 import { useEffect } from 'react'
-import { Routes, Route, Navigate } from 'react-router-dom'
+import { Routes, Route, Navigate,  Outlet } from 'react-router-dom'
 import { useAppSelector, useAppDispatch } from './store/hooks/hooks'
 import { autoRefresh } from './store/slices/userSlice'
 
@@ -16,6 +16,7 @@ import EmergencyWatchPage   from './pages/EmergencyWatchPage'
 import HealthOnboardingPage from './pages/HealthOnboardingPage'
 import AdminQueuePage       from './pages/AdminQueuePage'
 import { RealtimeAudioPopup } from './components/RealtimeAudioPopup'
+import MedBotPage from './pages/MedBotPage'
 
 // ── Loading splash ─────────────────────────────────────────────────────────────
 function LoadingScreen() {
@@ -35,13 +36,6 @@ function LoadingScreen() {
 }
 
 // ── Route guards ───────────────────────────────────────────────────────────────
-function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { user, isInitialized } = useAppSelector(s => s.user)
-  if (!isInitialized) return <LoadingScreen />
-  if (!user)          return <Navigate to="/login" replace />
-  return <>{children}</>
-}
-
 function PublicRoute({ children }: { children: React.ReactNode }) {
   const { user, isInitialized } = useAppSelector(s => s.user)
   if (!isInitialized) return <LoadingScreen />
@@ -49,6 +43,21 @@ function PublicRoute({ children }: { children: React.ReactNode }) {
   return <>{children}</>
 }
 
+// Wrap the entire protected section as a layout route
+function ProtectedLayout() {
+  const { user, isInitialized } = useAppSelector(s => s.user)
+  if (!isInitialized) return <LoadingScreen />
+  if (!user)          return <Navigate to="/login" replace />
+  return <Outlet />   // renders the matched child route
+}
+
+function AdminLayout() {
+  const { user, isInitialized } = useAppSelector(s => s.user)
+  if (!isInitialized) return <LoadingScreen />
+  if (!user || user.accountType !== "STAFF") return <Navigate to="/dashboard" replace />
+  if (user.staffRole !== "ADMIN")            return <Navigate to="/dashboard" replace />
+  return <Outlet />
+}
 // ── App ────────────────────────────────────────────────────────────────────────
 function App() {
   const dispatch = useAppDispatch()
@@ -63,29 +72,32 @@ function App() {
   return (
     <>
       <Routes>
-        {/* Public — redirect to dashboard if already logged in */}
-        <Route path="/"         element={<PublicRoute><WelcomePage /></PublicRoute>} />
+        {/* Truly public — no redirect logic */}
+        <Route path="/"       element={<WelcomePage />} />
+        <Route path="/terms"  element={<TermsOfServicePage />} />
+        <Route path="/privacy" element={<PrivacyPolicyPage />} />
+
+        {/* Redirect to dashboard if already logged in */}
         <Route path="/login"    element={<PublicRoute><LoginPage /></PublicRoute>} />
         <Route path="/register" element={<PublicRoute><CreateAccountPage /></PublicRoute>} />
-        <Route path="/terms"    element={<TermsOfServicePage />} />
-        <Route path="/privacy"  element={<PrivacyPolicyPage />} />
 
-        {/* Protected — redirect to /login if not authenticated */}
-        <Route path="/dashboard"       element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
-        <Route path="/er-queue"        element={<ProtectedRoute><ERQueuePage /></ProtectedRoute>} />
-        <Route path="/join-queue"      element={<ProtectedRoute><JoinQueuePage /></ProtectedRoute>} />
-        <Route path="/profile"         element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
-        <Route path="/emergency-watch" element={<ProtectedRoute><EmergencyWatchPage /></ProtectedRoute>} />
-        <Route path="/health-setup"    element={<ProtectedRoute><HealthOnboardingPage /></ProtectedRoute>} />
-        {/* <Route path="/medbot"          element={<ProtectedRoute><MedBotPage /></ProtectedRoute>} /> */}
+        {/* Protected */}
+        <Route element={<ProtectedLayout />}>
+          <Route path="/medbot"         element = {<MedBotPage/>}/>
+          <Route path="/dashboard"       element={<DashboardPage />} />
+          <Route path="/er-queue"        element={<ERQueuePage />} />
+          <Route path="/join-queue"      element={<JoinQueuePage />} />
+          <Route path="/profile"         element={<ProfilePage />} />
+          <Route path="/emergency-watch" element={<EmergencyWatchPage />} />
+          <Route path="/health-setup"    element={<HealthOnboardingPage />} />
 
-        {/* Admin */}
-        <Route path="/admin/queue/:departmentId" element={<ProtectedRoute><AdminQueuePage /></ProtectedRoute>} />
+          <Route element={<AdminLayout />}>
+            <Route path="/admin/queue/:departmentId" element={<AdminQueuePage />} />
+          </Route>
+        </Route>
 
-        {/* Fallback */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
-
       <RealtimeAudioPopup />
     </>
   )
