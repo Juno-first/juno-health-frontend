@@ -81,9 +81,9 @@ export default function JoinQueuePage() {
     }
 
     setFormErrors([]);
-
+    const token = form.queueCode.trim();
     return {
-      method,
+      method: token.toUpperCase().startsWith("FAC-") ? "QR" : "CODE",
       token: form.queueCode.trim(),
       presentingComplaint: form.symptoms.trim(),
       symptomSeverity: SEVERITY_MAP[form.severity!],
