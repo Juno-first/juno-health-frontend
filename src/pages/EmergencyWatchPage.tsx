@@ -84,10 +84,11 @@ function LiveMap({
   selected:   string | null;
   onSelect:   (id: string) => void;
 }) {
-  const mapRef     = useRef<HTMLDivElement>(null);
-  const leafRef    = useRef<any>(null);
-  const routesRef  = useRef<Record<string, any[]>>({});   // id → array of L.Polyline
-  const markersRef = useRef<Record<string, any>>({});
+  const mapRef      = useRef<HTMLDivElement>(null);
+  const leafRef     = useRef<any>(null);
+  const routesRef   = useRef<Record<string, any[]>>({});   // id → array of L.Polyline
+  const markersRef  = useRef<Record<string, any>>({});
+  const [mapReady,  setMapReady]  = useState(false);
 
   // ── Effect 1: create map + markers once ──────────────────────────────────────
   useEffect(() => {
@@ -182,6 +183,7 @@ function LiveMap({
       });
 
       leafRef.current = { map, L };
+      setMapReady(true);
     });
 
     // Ping keyframe
@@ -198,12 +200,13 @@ function LiveMap({
       leafRef.current     = null;
       markersRef.current  = {};
       routesRef.current   = {};
+      setMapReady(false);
     };
   }, [userLat, userLon]);    // ← only re-create map when location changes
 
-  // ── Effect 2: draw / redraw routes whenever facilities or map changes ─────
+  // ── Effect 2: draw / redraw routes whenever facilities or map is ready ──────
   useEffect(() => {
-    if (!leafRef.current) return;
+    if (!mapReady || !leafRef.current) return;
     const { map, L } = leafRef.current;
 
     // Remove all existing route polylines
@@ -232,7 +235,7 @@ function LiveMap({
 
       routesRef.current[f.id] = lines;
     });
-  }, [facilities]);   // ← re-draw whenever facilities prop changes
+  }, [facilities, mapReady]);   // ← re-draw when facilities arrive OR map becomes ready
 
   // ── Effect 3: highlight selected route, dim others ────────────────────────
   useEffect(() => {
